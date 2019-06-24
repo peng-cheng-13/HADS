@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>  
+<address>
+	<node>
+                <id>1</id>
+                <ip>12.11.199.130</ip>
+        </node>
+	<node>
+                <id>2</id>
+                <ip>12.11.199.131</ip>
+        </node>
+</address>
+
+
