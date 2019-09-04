@@ -188,9 +188,11 @@ template<typename T> bool Table<T>::get(uint64_t index, T *item, uint64_t *addre
         {
             bool status;                /* Status of existence of item. */
             if (bitmapItems->get(index, &status) == false) {
+		Debug::notifyError("Fail due to item get error");
                 result = false;         /* Fail due to item get error. */
             } else {
                 if (status == false) {
+		    Debug::notifyError("Fail due to no item.");
                     result = false;     /* Fail due to no item. */
                 } else {
                     *item = items[index]; /* Get item and put it into buffer. */
@@ -322,6 +324,7 @@ template<typename T> Table<T>::Table(char *buffer, uint64_t count)
             exit(EXIT_FAILURE);         /* Fail due to count alignment. */
         } else {
             bitmapItems = new Bitmap(count, buffer + count * sizeof(T)); /* Initialize item bitmap. */
+	    Debug::notifyInfo("Bitmap address is %ld", (long)(buffer + count * sizeof(T)));
             items = (T *)(buffer); /* Initialize items array. */
             sizeBufferUsed = count / 8 + count * sizeof(T); /* Size of used bytes in buffer. */
             /*  

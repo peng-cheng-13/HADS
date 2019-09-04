@@ -1,0 +1,9 @@
+/BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles/dmfs.dir
+/BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles/fusenrfs.dir
+/BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles/jninrfs.dir
+/BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles/locktest.dir
+/BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles/mpibw.dir
+/BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles/mpitest.dir
+/BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles/nrfsCli.dir
+/BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles/nrfsc.dir
+/BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles/nrfstest.dir

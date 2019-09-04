@@ -1,0 +1,115 @@
+Module                  Size  Used by
+fuse                   87741  2 
+osp                   342243  0 
+mdd                   355843  0 
+lod                   414978  0 
+mdt                   730182  0 
+lfsck                 683713  3 lod,mdd,mdt
+mgs                   305092  0 
+osd_ldiskfs           480816  0 
+lquota                357675  2 mdt,osd_ldiskfs
+ldiskfs               621180  1 osd_ldiskfs
+ext4                  578819  2 
+mbcache                14958  2 ext4,ldiskfs
+jbd2                  102940  3 osd_ldiskfs,ext4,ldiskfs
+osc                   375919  266 
+mgc                    93985  2 mgs
+lustre                841108  202 
+lmv                   232654  2 lustre
+mdc                   177582  2 lustre
+lov                   305123  136 lustre
+fid                    90379  6 mdc,mdd,mdt,osp,osd_ldiskfs,lfsck
+fld                    89956  7 fid,lmv,lod,mdd,mdt,osd_ldiskfs,lfsck
+ptlrpc               2065168  16 fid,fld,lmv,mdc,lod,mdd,mdt,lov,mgc,mgs,osc,osp,osd_ldiskfs,lfsck,lquota,lustre
+nfsv3                  39436  0 
+rpcsec_gss_krb5        31477  0 
+nfsv4                 501078  0 
+dns_resolver           13140  1 nfsv4
+nfs                   251822  2 nfsv3,nfsv4
+fscache                64987  2 nfs,nfsv4
+ksocklnd              183544  1 
+obdclass             2064697  250 fid,fld,lmv,mdc,lod,mdd,mdt,lov,mgc,mgs,osc,osp,osd_ldiskfs,lfsck,lquota,lustre,ptlrpc
+lnet                  448955  8 mdt,mgc,mgs,osc,lustre,obdclass,ptlrpc,ksocklnd
+sha512_generic         12942  0 
+crypto_null            12840  0 
+libcfs                399776  20 fid,fld,lmv,mdc,lod,mdd,mdt,lov,mgc,mgs,osc,osp,osd_ldiskfs,lnet,lfsck,lquota,lustre,obdclass,ptlrpc,ksocklnd
+nio_net                32476  0 
+xt_CHECKSUM            12549  1 
+iptable_mangle         12695  1 
+ipt_MASQUERADE         12678  3 
+nf_nat_masquerade_ipv4    13412  1 ipt_MASQUERADE
+iptable_nat            12875  1 
+nf_nat_ipv4            14115  1 iptable_nat
+nf_nat                 26146  2 nf_nat_ipv4,nf_nat_masquerade_ipv4
+nf_conntrack_ipv4      14862  2 
+nf_defrag_ipv4         12729  1 nf_conntrack_ipv4
+xt_conntrack           12760  1 
+nf_conntrack          105745  5 nf_nat,nf_nat_ipv4,xt_conntrack,nf_nat_masquerade_ipv4,nf_conntrack_ipv4
+ipt_REJECT             12541  2 
+tun                    27141  1 
+bridge                119562  0 
+stp                    12976  1 bridge
+llc                    14552  2 stp,bridge
+ebtable_filter         12827  0 
+ebtables               30913  1 ebtable_filter
+ip6table_filter        12815  0 
+ip6_tables             27025  1 ip6table_filter
+iptable_filter         12810  1 
+intel_powerclamp       18648  0 
+coretemp               13435  0 
+kvm_intel             162153  0 
+kvm                   525409  1 kvm_intel
+nio_dev                59146  1 nio_net
+crc32_pclmul           13113  0 
+sb_edac                27005  0 
+iTCO_wdt               13480  0 
+iTCO_vendor_support    13718  1 iTCO_wdt
+ghash_clmulni_intel    13259  0 
+aesni_intel            69884  0 
+lpc_ich                21073  0 
+lrw                    13286  1 aesni_intel
+gf128mul               14951  1 lrw
+edac_core              57922  1 sb_edac
+ipmi_ssif              23695  0 
+sg                     40721  0 
+i2c_i801               18134  0 
+pcspkr                 12718  0 
+mfd_core               13435  1 lpc_ich
+ipmi_msghandler        46609  1 ipmi_ssif
+glue_helper            13990  1 aesni_intel
+ablk_helper            13597  1 aesni_intel
+cryptd                 20359  3 ghash_clmulni_intel,aesni_intel,ablk_helper
+mei_me                 18646  0 
+mei                    82723  1 mei_me
+ioatdma                67758  0 
+shpchp                 37032  0 
+wmi                    19070  0 
+nfsd                  302418  1 
+auth_rpcgss            59343  2 nfsd,rpcsec_gss_krb5
+nfs_acl                12837  2 nfsd,nfsv3
+lockd                  93600  3 nfs,nfsd,nfsv3
+grace                  13295  2 nfsd,lockd
+sunrpc                300464  11 nfs,nfsd,rpcsec_gss_krb5,auth_rpcgss,lockd,nfsv3,nfsv4,nfs_acl
+ip_tables              27240  3 iptable_filter,iptable_mangle,iptable_nat
+xfs                   939662  4 
+libcrc32c              12644  1 xfs
+sd_mod                 45497  3 
+crc_t10dif             12714  1 sd_mod
+crct10dif_generic      12647  0 
+igb                   192596  0 
+crct10dif_pclmul       14289  1 
+crct10dif_common       12595  3 crct10dif_pclmul,crct10dif_generic,crc_t10dif
+ptp                    19231  1 igb
+crc32c_intel           22079  1 
+pps_core               19106  1 ptp
+ahci                   29907  2 
+i2c_algo_bit           13413  1 igb
+libahci                32031  1 ahci
+i2c_core               40582  4 igb,i2c_i801,ipmi_ssif,i2c_algo_bit
+libata                218730  2 ahci,libahci
+dca                    15130  2 igb,ioatdma
+nvme                   64246  3 
+dm_mirror              22135  0 
+dm_region_hash         20862  1 dm_mirror
+dm_log                 18411  2 dm_region_hash,dm_mirror
+dm_mod                113292  14 dm_log,dm_mirror

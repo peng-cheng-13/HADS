@@ -35,8 +35,8 @@ struct nrfsfileattr
 #define MAX_PATH_LENGTH 255             /* Max length of path. */
 
 /** Definitions. **/
-#define MAX_FILE_EXTENT_COUNT 20        /* Max extent count in meta of a file. */
-#define BLOCK_SIZE (1 * 1024 * 1024)    /* Current block size in bytes. */
+#define MAX_FILE_EXTENT_COUNT 128        /* Max extent count in meta of a file. */
+#define BLOCK_SIZE (16 * 1024 * 1024)    /* Current block size in bytes. */
 #define MAX_FILE_NAME_LENGTH 50         /* Max file name length. */
 #define MAX_DIRECTORY_COUNT 60         /* Max directory count. */
 
@@ -45,17 +45,42 @@ typedef uint64_t NodeHash;              /* Node hash. */
 
 typedef struct 
 {
-	NodeHash hashNode; /* Node hash array of extent. */
+    NodeHash hashNode; /* Node hash array of extent. */
     uint32_t indexExtentStartBlock; /* Index array of start block in an extent. */
     uint32_t countExtentBlock; /* Count array of blocks in an extent. */
+    bool isDirty;
+    uint64_t StorageAddress;
 } FileMetaTuple;
+
+typedef struct
+{
+    NodeHash hashNode;
+    uint32_t indexExtentStartBlock;
+    uint32_t BlockID;
+} FileBlockTuple;
+
+/*
+typedef struct {
+    uint32_t BlockID;
+    uint32_t indexCache;
+    uint32_t indexMmem;
+    bool isDirty;
+    uint64_t StorageAddress;
+    bool present; //whether a block is presented in RDMA region;
+}BlockInfo;
+ * */
 
 typedef struct                          /* File meta structure. */
 {
     time_t timeLastModified;        /* Last modified time. */
     uint64_t count;                 /* Count of extents. (not required and might have consistency problem with size) */
     uint64_t size;                  /* Size of extents. */
-    FileMetaTuple tuple[MAX_FILE_EXTENT_COUNT];
+    bool isNewFile;                 /* Whether the file is newly created or dirty */
+    uint32_t tier;                  /* The storage tier the file resides*/
+    FileMetaTuple tuple[MAX_FILE_EXTENT_COUNT];  /* Blocks in RDMA region */
+    FileBlockTuple StorageTuple[MAX_FILE_EXTENT_COUNT]; /* Blocks in memory pool or SSD tier */
+    //List<BlcokInfo>;
+    //char* name;
 } FileMeta;
 
 typedef struct {

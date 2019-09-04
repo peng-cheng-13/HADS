@@ -16,13 +16,15 @@ static inline uint32_t gettid() {
     return (uint32_t)syscall(SYS_gettid);
 }
 
-#define CLIENT_MESSAGE_SIZE 4096
+#define CLIENT_MESSAGE_SIZE 8192
 #define MAX_CLIENT_NUMBER   1024
 #define SERVER_MASSAGE_SIZE CLIENT_MESSAGE_SIZE
 #define SERVER_MASSAGE_NUM 8
 #define METADATA_SIZE (128 * 1024 * 1024)
 #define LOCALLOGSIZE (40 * 1024 * 1024)
 #define DISTRIBUTEDLOGSIZE (1024 * 1024)
+#define EXTRADATASIZE (8 * 1024) /*MB*/
+#define DB_PATH "/tmp/KCDB"
 
 // #define TRANSACTION_2PC 1
 #define TRANSACTION_CD 1
@@ -53,7 +55,8 @@ typedef enum {                          /* Message enumerator. */
     MESSAGE_RAWREAD,
     MESSAGE_DOCOMMIT,
     MESSAGE_READDIRECTORYMETA,
-    MESSAGE_INVALID
+    MESSAGE_INVALID,
+    MESSAGE_NOTDIR
 } Message;
 
 typedef struct {                        /* Extra information structure. */
@@ -106,9 +109,11 @@ typedef struct : ExtraInformation {     /* extentWrite send buffer structure. */
 
 typedef struct : ExtraInformation {     /* updateMeta send buffer structure. */
     Message message;                    /* Message type. */
-    uint64_t offset;
-    uint64_t key;                       /* Key to unlock. */
+    char path[MAX_PATH_LENGTH];
+    //uint64_t offset;
+    //uint64_t key;                       /* Key to unlock. */
 } UpdateMetaSendBuffer;
+
 
 typedef struct : ExtraInformation {     /* extentReadEnd send buffer structure. */
     Message message;                    /* Message type. */

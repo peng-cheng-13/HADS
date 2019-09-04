@@ -36,6 +36,7 @@ private:
 	uint64_t DMFSTotalSize;
 	uint64_t LocalLogAddress;
 	uint64_t DistributedLogAddress;
+	uint64_t ExtraDataAddress;
 	int shmid;
 	Thread2ID th2id;
 public:
@@ -50,6 +51,7 @@ public:
 	uint64_t getClientMessageAddress(uint16_t NodeID);
 	uint64_t getLocalLogAddress();
 	uint64_t getDistributedLogAddress();
+	uint64_t getExtraDataAddress();
 	void setID(int ID);
 };
 

@@ -1,0 +1,53 @@
+[4mDmfsBaseAddress = 7feef37a4000, DmfsTotalSize = 60410000[0m
+[4mIP = 12.11.199.130, NodeID = 1[0m
+[4mDmfsBaseAddress = 7f42bb2cc000, DmfsTotalSize = 60410000[0m
+[4mIP = 12.11.199.131, NodeID = 2[0m
+Num of glex devices is 1
+Device opened
+Endpoint created
+mmSize is 1614872576
+Memory registration succeed
+Debug-RdmaSocket.cpp: kv.first is 2, MyNodeID is 1
+Debug-RdmaSocket.cpp: kv.first is 1, MyNodeID is 1
+Debug-RPCServer.cpp: countNode = 2, NodeHash = 1 
+Debug-RdmaSocket.cpp: RdmaAccept sock 12, nodeid is 1
+[4msizeof Hash Table = 18 MB[0m
+[4msizeof File Meta Size = 6 MB[0m
+[4msizeof Directory Meta Size = 90 MB[0m
+[4mInitialize root directory.[0m
+[4mWorker 1, tid = 14368[0m
+[4mWorker 0, tid = 14367[0m
+Debug-RPCServer.cpp: Ready to poll request
+Debug-RPCServer.cpp: Ready to poll request
+Memory registration succeed
+Debug-RdmaSocket.cpp: RdmaListen, listen 5
+Debug-RdmaSocket.cpp: RdmaListen, Ready to ServerConnect
+Debug-RdmaSocket.cpp: kv.first is 2, MyNodeID is 2
+Debug-RdmaSocket.cpp: kv.first is 1, MyNodeID is 2
+Debug-RdmaSocket.cpp: SocketConnect to 1, MyNodeID is 2
+Debug-RdmaSocket.cpp: RdmaAccept sock 7, nodeid is 2
+[0;31mConnect to the server 1[0m
+Debug-RdmaSocket.cpp: Ready to ConnectQueuePair, nodeid is 2
+Debug-RdmaSocket.cpp: ConnectQueuePair exeuting
+Debug-RdmaSocket.cpp: size of struct ExchangeID is 6
+Debug-RdmaSocket.cpp: DataSyncwithSocket write once, nodeid is 2, write bytes : 6 
+Debug-RdmaSocket.cpp: DataSyncwithSocket read once, -1 bytes
+[0;31mfailed to exchange connection data between sides[0m
+[0;31mRDMA connect with error[0m
+Debug-RdmaSocket.cpp: RdmaListen, ServerConnect Done
+Debug-RPCServer.cpp: countNode = 2, NodeHash = 2 
+[4msizeof Hash Table = 18 MB[0m
+[4msizeof File Meta Size = 6 MB[0m
+[4msizeof Directory Meta Size = 90 MB[0m
+[4mWorker 1, tid = 39380[0m
+[4mWorker 0, tid = 39379[0m
+Debug-RPCServer.cpp: Ready to poll request
+Debug-RPCServer.cpp: Ready to poll request
+
+===================================================================================
+=   BAD TERMINATION OF ONE OF YOUR APPLICATION PROCESSES
+=   PID 14365 RUNNING AT 12.11.199.130
+=   EXIT CODE: 139
+=   CLEANING UP REMAINING PROCESSES
+=   YOU CAN IGNORE THE BELOW CLEANUP MESSAGES
+===================================================================================

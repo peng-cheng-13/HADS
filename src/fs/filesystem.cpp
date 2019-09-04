@@ -68,13 +68,15 @@ void FileSystem::updateRemoteMeta(uint16_t parentNodeID, DirectoryMeta *meta, ui
 	uint64_t RemoteBuffer = parentMetaAddress;
 	Debug::debugItem("imm = %x, SendBuffer = %lx, RemoteBuffer = %lx", imm, SendBuffer, RemoteBuffer);
 	if (parentNodeID == server->getRdmaSocketInstance()->getNodeID()) {
+		Debug::debugItem("updateMeta, memcopy to local node");
 		memcpy((void *)(RemoteBuffer + server->getMemoryManagerInstance()->getDmfsBaseAddress()), (void *)meta, sizeof(DirectoryMeta));
 		//unlockWriteHashItem(0, parentNodeID, parentHashAddress);
 		return;
 	}
-    uint64_t size = sizeof(DirectoryMeta) - sizeof(DirectoryMetaTuple) * (MAX_DIRECTORY_COUNT - meta->count);
+	Debug::debugItem("updateMeta, RDMA wirte to remotenode");
+        uint64_t size = sizeof(DirectoryMeta) - sizeof(DirectoryMetaTuple) * (MAX_DIRECTORY_COUNT - meta->count);
 	memcpy((void *)SendBuffer, (void *)meta, size);
-    server->getRdmaSocketInstance()->RdmaWrite(parentNodeID, SendBuffer, RemoteBuffer, size, -1, 1);
+        server->getRdmaSocketInstance()->RdmaWrite(parentNodeID, SendBuffer, RemoteBuffer, size, -1, 1);
 	server->getRdmaSocketInstance()->RdmaRead(parentNodeID, SendBuffer, RemoteBuffer, size, 1, false);
 	/* Data will be written to the remote address, and lock will be released with the assist of imm data. */
 	/* WRITE READ will be send after that, flushing remote data. */
@@ -283,7 +285,12 @@ void FileSystem::parseMessage(char *bufferRequest, char *bufferResponse)
         case MESSAGE_ACCESS: 
         {
 	    Debug::debugItem("parseMessage: MESSAGE_ACCESS");
-            bufferGeneralReceive->result = access(bufferGeneralSend->path);
+	    bool isDirectory = false;
+            bufferGeneralReceive->result = access(bufferGeneralSend->path, &isDirectory);
+	    if (!isDirectory) {
+		Debug::debugItem("Not a Directory");
+		bufferGeneralReceive->message = MESSAGE_NOTDIR;
+	    }
             break;
         }
         case MESSAGE_MKDIR: 
@@ -319,7 +326,7 @@ void FileSystem::parseMessage(char *bufferRequest, char *bufferResponse)
                 (ExtentReadSendBuffer *)bufferGeneralSend;
             ExtentReadReceiveBuffer *bufferReceive = 
                 (ExtentReadReceiveBuffer *)bufferGeneralReceive;
-            bufferReceive->result = extentRead(bufferSend->path, 
+            bufferReceive->result = extentReadV2(bufferSend->path, 
                 bufferSend->size, bufferSend->offset, &(bufferReceive->fpi),
                  &(bufferReceive->offset), &(bufferReceive->key));
             unlockReadHashItem(bufferReceive->key, (NodeHash)bufferSend->sourceNodeID, (AddressHash)(bufferReceive->offset));
@@ -332,7 +339,7 @@ void FileSystem::parseMessage(char *bufferRequest, char *bufferResponse)
                 (ExtentWriteSendBuffer *)bufferGeneralSend;
             ExtentWriteReceiveBuffer *bufferReceive = 
                 (ExtentWriteReceiveBuffer *)bufferGeneralReceive;
-            bufferReceive->result = extentWrite(bufferSend->path, 
+            bufferReceive->result = extentWriteV2(bufferSend->path, 
                 bufferSend->size, bufferSend->offset, &(bufferReceive->fpi), 
                 &(bufferReceive->offset), &(bufferReceive->key));
             unlockWriteHashItem(bufferReceive->key, (NodeHash)bufferSend->sourceNodeID, (AddressHash)(bufferReceive->offset));
@@ -341,10 +348,10 @@ void FileSystem::parseMessage(char *bufferRequest, char *bufferResponse)
         case MESSAGE_UPDATEMETA:
         {
 	    Debug::debugItem("parseMessage: MESSAGE_UPDATEMETA");
-            // UpdateMetaSendBuffer *bufferSend = 
-            //     (UpdateMetaSendBuffer *)bufferGeneralSend;
-            // bufferGeneralReceive->result = updateMeta(bufferSend->path, 
-            //     &(bufferSend->metaFile), bufferSend->key);
+            UpdateMetaSendBuffer *bufferSend = (UpdateMetaSendBuffer *)bufferGeneralSend;
+	    //uint32_t tier = 0; /*To be implemented: Intelligent data palcement*/
+            bufferGeneralReceive->result = moveAndUpdateMeta(bufferSend->path);
+            //bufferGeneralReceive->result = updateMeta(bufferSend->path, &(bufferSend->metaFile), bufferSend->key);
             break;
         }
         case MESSAGE_EXTENTREADEND:
@@ -372,8 +379,8 @@ void FileSystem::parseMessage(char *bufferRequest, char *bufferResponse)
         case MESSAGE_REMOVE:
         {
 	    Debug::debugItem("parseMessage: MESSAGE_REMOVE");
-            GetAttributeReceiveBuffer *bufferReceive = 
-                (GetAttributeReceiveBuffer *)bufferGeneralReceive;
+            GetAttributeReceiveBuffer *bufferReceive = (GetAttributeReceiveBuffer *)bufferGeneralReceive;
+            //GeneralReceiveBuffer *bufferReceive = (GeneralReceiveBuffer *)bufferGeneralReceive;
             bufferReceive->result = remove(bufferGeneralSend->path, &(bufferReceive->attribute));
             break;
         }
@@ -482,7 +489,7 @@ bool FileSystem::addMetaToDirectory(const char *path, const char *name, bool isD
                         if (storage->tableDirectoryMeta->put(indexDirectoryMeta, &metaDirectory, desBuffer) == false) { /* Update directory meta. */
                             result = false; /* Fail due to put directory meta error. */
                         } else {
-                            // printf("addmeta, desBuffer = %lx, srcBuffer = %lx, size = %d\n", *desBuffer, *srcBuffer, *size);
+                            printf("addmeta, desBuffer = %lx, srcBuffer = %lx, size = %d\n", *desBuffer, *srcBuffer, *size);
                             result = true; /* Succeed. */
                         }
                     }
@@ -739,8 +746,7 @@ bool FileSystem::mknod(const char *path)
 
 bool FileSystem::mknodcd(const char *path) 
 {
-    printf("Debug-fileystem.cpp: mknod-cd\n");
-    Debug::debugTitle("FileSystem::mknod");
+    Debug::debugTitle("FileSystem::mknod-cd");
     Debug::debugItem("Stage 1. Entry point. Path: %s.", path);
     if (path == NULL) {
         return false;                   /* Fail due to null path. */
@@ -771,7 +777,7 @@ bool FileSystem::mknodcd(const char *path)
                     result = false;
                 } else {
                     uint64_t indexMeta;
-                    bool isDirectory;
+                    bool isDirectory = false;
                     if (storage->hashtable->get(&hashUnique, &indexMeta, &isDirectory) == true) { /* If path exists. */
                         Debug::notifyError("addMetaToDirectory failed.");
                         // TxDistributedPrepare(DistributedTxID, false);
@@ -783,18 +789,31 @@ bool FileSystem::mknodcd(const char *path)
                         strcpy(parentMeta.tuple[parentMeta.count - 1].names, name); /* Add name. */
                         parentMeta.tuple[parentMeta.count - 1].isDirectories = isDirectory; /* Add directory state. */
                         
-                        Debug::debugItem("Stage 3. Create file meta.");
+                        Debug::debugItem("Stage 3. Create file meta. name is %s, isDirectory = %d", name, isDirectory);
                         uint64_t indexFileMeta;
                         FileMeta metaFile;
                         metaFile.timeLastModified = time(NULL); /* Set last modified time. */
                         metaFile.count = 0; /* Initialize count of extents as 0. */
                         metaFile.size = 0;
+			metaFile.isNewFile = true;
+			metaFile.tier = 0;
                         /* Apply updated data to local log. */
                         TxWriteData(LocalTxID, (uint64_t)&parentMeta, (uint64_t)sizeof(DirectoryMeta));
                         /* Receive remote prepare with (OK) */
                         // TxDistributedPrepare(DistributedTxID, true);
                         /* Start phase 2, commit it. */
-                        updateRemoteMeta(parentNodeID, &parentMeta, parentMetaAddress, parentHashAddress);
+			if (parentNodeID == server->getRdmaSocketInstance()->getNodeID()) {
+			    UniqueHash dirhashUnique;
+			    HashTable::getUniqueHash(parent, strlen(parent), &dirhashUnique);
+			    uint64_t indexDirectoryMeta;
+			    bool isDirectoryTemporary;
+			    storage->hashtable->get(&dirhashUnique, &indexDirectoryMeta, &isDirectoryTemporary);
+			    Debug::debugItem("updateMetaV2, put metadata to tableDirectoryMeta, indexDirectoryMeta = %ld", (long)indexDirectoryMeta);
+			    Debug::debugItem("countSavedItems = %ld", storage->tableDirectoryMeta->countSavedItems());
+			    storage->tableDirectoryMeta->put(indexDirectoryMeta, &parentMeta);
+			} else {
+                            updateRemoteMeta(parentNodeID, &parentMeta, parentMetaAddress, parentHashAddress);
+			}
                         /* Only allocate momery, write to log first. */
                         if (storage->tableFileMeta->create(&indexFileMeta, &metaFile) == false) {
                             result = false; /* Fail due to create error. */
@@ -927,7 +946,7 @@ bool FileSystem::getattr(const char *path, FileMeta *attribute)
             uint64_t key = lockReadHashItem(hashNode, hashAddress); /* Lock hash item. */
             {
                 uint64_t indexMeta;
-                bool isDirectory;
+                bool isDirectory = false;
                 Debug::debugItem("Stage 1.1.");
                 if (storage->hashtable->get(&hashUnique, &indexMeta, &isDirectory) == false) { /* If path does not exist. */
                     Debug::debugItem("Stage 1.2.");
@@ -959,7 +978,7 @@ bool FileSystem::getattr(const char *path, FileMeta *attribute)
 /* Access. That is to judge the existence of file or folder.
    @param   path    Path of file or folder.
    @return          If operation succeeds then return true, otherwise return false. */
-bool FileSystem::access(const char *path)
+bool FileSystem::access(const char *path, bool *isDirectory2)
 {
     Debug::debugTitle("FileSystem::access");
     Debug::debugItem("Stage 1. Entry point. Path: %s.", path);
@@ -975,16 +994,22 @@ bool FileSystem::access(const char *path)
         if (checkLocal(hashNode) == true) { /* If local node. */
             bool result;
             Debug::debugItem("Stage 4.");
+	    bool isDirectory;
             uint64_t key = lockReadHashItem(hashNode, hashAddress); /* Lock hash item. */
             {
                 uint64_t indexMeta;
-                bool isDirectory;
                 if (storage->hashtable->get(&hashUnique, &indexMeta, &isDirectory) == false) { /* If path does not exist. */
 		    Debug::debugItem("Stage 5. retrun false, file does not exist.");
                     result = false;     /* Fail due to path does not exist. */
                 } else {
                     result = true;      /* Succeed. Do not need to check parent. */
-		    Debug::debugItem("Stage 5. retrun true, file exists.");
+		    if (isDirectory) {
+			Debug::debugItem("Stage 5. retrun true, Dir exists.");
+			*isDirectory2 = true;
+		    } else {
+ 		        Debug::debugItem("Stage 5. retrun true, file exists.");
+			*isDirectory2 = false;
+		    }
                 }
             }
             unlockReadHashItem(key, hashNode, hashAddress); /* Unlock hash item. */
@@ -1338,7 +1363,8 @@ bool FileSystem::readDirectoryMeta(const char *path, DirectoryMeta *meta, uint64
                         result = false; /* Fail due to not directory. */
                     } else {
                         if (storage->tableDirectoryMeta->get(indexDirectoryMeta, meta, metaAddress) == false) {
-                        	Debug::notifyError("Fail due to get directory meta error.");
+                            Debug::notifyError("Fail due to get directory meta error, indexDirectoryMeta = %ld", (long)indexDirectoryMeta);
+			    Debug::notifyError("countSavedItems = %ld", storage->tableDirectoryMeta->countSavedItems());
                             result = false; /* Fail due to get directory meta error. */
                         } else {
                         	Debug::debugItem("metaAddress = %lx, getDmfsBaseAddress = %lx", *metaAddress, server->getMemoryManagerInstance()->getDmfsBaseAddress());
@@ -1443,26 +1469,40 @@ void FileSystem::fillFilePositionInformation(uint64_t size, uint64_t offset, fil
              sizeInStartExtent, sizeInEndExtent; /* Size to operate in start extent and end extent. */
     uint64_t offsetStartOfCurrentExtent = 0; /* Relative offset of start byte in current extent. */
     Debug::debugItem("Stage 9.");
+    /*Special operation for scenario that each extent contains one block only*/
+    boundStartExtent = offset / BLOCK_SIZE;
+    boundEndExtent = (offset + size - 1) / BLOCK_SIZE;
+    offsetInStartExtent = offset % BLOCK_SIZE;
+    sizeInStartExtent = (offset % BLOCK_SIZE + size) > BLOCK_SIZE ? (BLOCK_SIZE - offset % BLOCK_SIZE): size;
+    if (boundStartExtent == boundEndExtent) {
+	sizeInEndExtent = size;
+    } else {
+	sizeInEndExtent = size - (boundEndExtent - boundStartExtent - 1) * BLOCK_SIZE - sizeInStartExtent;
+    }
+
+    /*Each extent contains multiple blocks
     for (uint64_t i = 0; i < metaFile->count; i++) {
-        if ((offsetStartOfCurrentExtent + metaFile->tuple[i].countExtentBlock * BLOCK_SIZE - 1) >= offsetStart) { /* A -1 is needed to locate offset of end byte in current extent. */
-            boundStartExtent = i;       /* Assign bound of extent containing start byte. */
-            offsetInStartExtent = offsetStart - offsetStartOfCurrentExtent; /* Assign relative offset of start byte in start extent. */
-            sizeInStartExtent = metaFile->tuple[i].countExtentBlock * BLOCK_SIZE - offsetInStartExtent; /* Assign size to opreate in start extent. */
+        if ((offsetStartOfCurrentExtent + metaFile->tuple[i].countExtentBlock * BLOCK_SIZE - 1) >= offsetStart) { // A -1 is needed to locate offset of end byte in current extent. 
+            boundStartExtent = i;       // Assign bound of extent containing start byte. 
+            offsetInStartExtent = offsetStart - offsetStartOfCurrentExtent; // Assign relative offset of start byte in start extent. 
+            sizeInStartExtent = metaFile->tuple[i].countExtentBlock * BLOCK_SIZE - offsetInStartExtent; // Assign size to opreate in start extent. 
             break;
         }
-        offsetStartOfCurrentExtent += metaFile->tuple[i].countExtentBlock * BLOCK_SIZE; /* Add count of blocks in current extent. */
+        offsetStartOfCurrentExtent += metaFile->tuple[i].countExtentBlock * BLOCK_SIZE; // Add count of blocks in current extent. 
     }
-    offsetStartOfCurrentExtent = 0;     /* Relative offset of end byte in current extent. */
+    offsetStartOfCurrentExtent = 0;     // Relative offset of end byte in current extent. 
     Debug::debugItem("Stage 10. metaFile->count = %lu", metaFile->count);
     for (uint64_t i = 0; i < metaFile->count; i++) {
-        if ((offsetStartOfCurrentExtent + metaFile->tuple[i].countExtentBlock * BLOCK_SIZE - 1) >= offsetEnd) { /* A -1 is needed to locate offset of end byte in current extent. */
-            boundEndExtent = i;         /* Assign bound of extent containing end byte. */
-            offsetInEndExtent = offsetEnd - offsetStartOfCurrentExtent; /* Assign relative offset of end byte in end extent. */
-            sizeInEndExtent = offsetInEndExtent + 1; /* Assign size to opreate in end extent. */
+        if ((offsetStartOfCurrentExtent + metaFile->tuple[i].countExtentBlock * BLOCK_SIZE - 1) >= offsetEnd) { // A -1 is needed to locate offset of end byte in current extent. 
+            boundEndExtent = i;         // Assign bound of extent containing end byte. 
+            offsetInEndExtent = offsetEnd - offsetStartOfCurrentExtent; // Assign relative offset of end byte in end extent. 
+            sizeInEndExtent = offsetInEndExtent + 1; // Assign size to opreate in end extent. 
             break;
         }
-        offsetStartOfCurrentExtent += metaFile->tuple[i].countExtentBlock * BLOCK_SIZE; /* Add count of blocks in current extent. */
+        offsetStartOfCurrentExtent += metaFile->tuple[i].countExtentBlock * BLOCK_SIZE; // Add count of blocks in current extent. 
     }
+    */
+
     Debug::debugItem("Stage 11. boundStartExtent = %lu, boundEndExtent = %lu", boundStartExtent, boundEndExtent);
     if (boundStartExtent == boundEndExtent) { /* If in one extent. */
         fpi->len = 1;                   /* Assign length. */
@@ -1486,6 +1526,122 @@ void FileSystem::fillFilePositionInformation(uint64_t size, uint64_t offset, fil
         Debug::debugItem("Stage 13.");
     }
 }  
+
+/*Copy data from Memory tier or SSD tier to the RDMA region.
+   @param   BlockID        The block ID that need to be copied.*/
+
+bool FileSystem::fillRDMARegionV2(uint64_t BlockID, FileMeta *metaFile, const char *path) {
+    uint64_t MemZoneBaseAddress = server->getMemoryManagerInstance()->getExtraDataAddress();
+    uint64_t RdmaZoneBaseAddress = server->getMemoryManagerInstance()->getDataAddress();
+
+    uint64_t indexCurrentExtraBlock;
+    if (storage->tableBlock->create(&indexCurrentExtraBlock) == false) { /*Allocate a new block in RDMA region*/
+	Debug::notifyError("Create block in RDMA region failed!");
+        return false;
+    } else {
+	Debug::debugItem("Init RDMA block, id = %d, indexCurrentExtraBlock = %d", BlockID, indexCurrentExtraBlock);
+	metaFile->count++;
+	metaFile->tuple[BlockID].hashNode = hashLocalNode;
+	metaFile->tuple[BlockID].indexExtentStartBlock = indexCurrentExtraBlock;
+	metaFile->tuple[BlockID].countExtentBlock = 1;
+	metaFile->tuple[BlockID].isDirty = true;
+	metaFile->tuple[BlockID].StorageAddress = MemZoneBaseAddress + metaFile->StorageTuple[BlockID].indexExtentStartBlock * BLOCK_SIZE;
+
+	/*Copy data*/
+	if(metaFile->tier == 0) {
+	    void *src = (void *)(metaFile->tuple[BlockID].StorageAddress);
+            void *dest  = (void *)(RdmaZoneBaseAddress + indexCurrentExtraBlock * BLOCK_SIZE);
+            Debug::debugItem("Copy data from Memory tier, src = %ld, dest = %ld", (long)metaFile->tuple[BlockID].StorageAddress, (long)(RdmaZoneBaseAddress + indexCurrentExtraBlock * BLOCK_SIZE));
+            Debug::debugItem("RdmaZoneBaseAddress = %ld, indexCurrentExtraBlock = %ld", (long)RdmaZoneBaseAddress, (long)indexCurrentExtraBlock);
+            memcpy(dest, src, BLOCK_SIZE);
+	} else {
+           Debug::debugItem("Copy data from SSD tier");
+	   char *key = (char *)malloc(sizeof(char) * (strlen(path) + 5));
+           sprintf(key, "%s_%d", path, BlockID);
+           void *value  = (void *) (RdmaZoneBaseAddress + indexCurrentExtraBlock * BLOCK_SIZE);
+           storage->db.get((const char *)key, sizeof(key), (char *)value, BLOCK_SIZE);
+           Debug::debugItem("Copy data from the SSD tier Done");
+        }
+    }
+    return true;
+}
+
+/*Copy data from Memory tier or SSD tier to the RDMA region, and then
+  fill file position information for read and write. No check on parameters. 
+   @param   size        Size to operate.
+   @param   offset      Offset to operate. 
+   @param   fpi         File position information.
+   @param   metaFile    File meta. */
+bool FileSystem::fillRDMARegion(uint64_t size, uint64_t offset, file_pos_info *fpi, FileMeta *metaFile) {
+    Debug::debugTitle("FileSystem::fillRDMARegion");
+    int i,j;
+    uint64_t MemZoneBaseAddress = server->getMemoryManagerInstance()->getExtraDataAddress();
+    uint64_t RdmaZoneBaseAddress = server->getMemoryManagerInstance()->getDataAddress();
+
+    /* Move data to the memory or SSD tier if the file is dirty 
+    if (metaFile->isNewFile) {
+	for (i = offset / BLOCK_SIZE; i < (offset + size - 1) / BLOCK_SIZE + 1; i++ ) {
+	    if (metaFile->tuple[i].isDirty == true)
+	}
+        Debug::debugItem("Dirty file, move data");
+	moveAndUpdateMeta(metaFile);
+    }
+    */
+
+    /* Copy data to the RDMA region */
+    Debug::debugItem("Copy data to the RDMA region");
+    uint64_t countExtraBlock; /* Count of extra blocks. At least 1. */
+    uint64_t BlockID = 0;
+    uint64_t indexCurrentExtraBlock;
+    for (i = offset / BLOCK_SIZE; i < (offset + size - 1) / BLOCK_SIZE + 1; i++ ) { /*Calculate blockIDs that need to be copied*/
+	if (storage->tableBlock->create(&indexCurrentExtraBlock) == false) {
+	    Debug::debugItem("Create block in RDMA region failed!");
+	    return false;
+	} else {
+	    Debug::debugItem("Init RDMA block, id = %d, indexCurrentExtraBlock = %d", BlockID, indexCurrentExtraBlock);
+            metaFile->count++; /*Number of block in RDMA region + 1*/
+	    metaFile->tuple[BlockID].hashNode = hashLocalNode;
+	    metaFile->tuple[BlockID].indexExtentStartBlock = indexCurrentExtraBlock;
+	    metaFile->tuple[BlockID].countExtentBlock = 1;
+	    metaFile->tuple[BlockID].isDirty = true;
+	    metaFile->tuple[BlockID].StorageAddress = MemZoneBaseAddress + metaFile->StorageTuple[i].indexExtentStartBlock * BLOCK_SIZE;
+
+	    /*Copy data*/
+	    if(metaFile->tier == 0) {
+	        void *src = (void *)(metaFile->tuple[BlockID].StorageAddress);
+	        void *dest  = (void *)(RdmaZoneBaseAddress + indexCurrentExtraBlock * BLOCK_SIZE);
+                Debug::debugItem("Copy data from Memory tier, src = %ld, dest = %ld", (long)metaFile->tuple[BlockID].StorageAddress, (long)(RdmaZoneBaseAddress + indexCurrentExtraBlock * BLOCK_SIZE));
+		Debug::debugItem("RdmaZoneBaseAddress = %ld, indexCurrentExtraBlock = %ld", (long)RdmaZoneBaseAddress, (long)indexCurrentExtraBlock);
+	        memcpy(dest, src, BLOCK_SIZE);
+	    } else {
+               Debug::debugItem("Copy data from SSD tier");
+	    }
+
+	    BlockID++;
+	}
+    }
+    /*Fill file position information*/
+    Debug::debugItem("Fill file position information");
+    fpi->len = metaFile->count;
+    if (fpi->len == 1) {
+        fpi->tuple[0].node_id = metaFile->tuple[0].hashNode;
+        fpi->tuple[0].offset = metaFile->tuple[0].indexExtentStartBlock * BLOCK_SIZE + offset % BLOCK_SIZE;
+        fpi->tuple[0].size = size;
+    } else {
+        fpi->tuple[0].node_id = metaFile->tuple[0].hashNode;
+        fpi->tuple[0].offset = metaFile->tuple[0].indexExtentStartBlock * BLOCK_SIZE + offset % BLOCK_SIZE;
+        fpi->tuple[0].size = (offset % BLOCK_SIZE + size) > BLOCK_SIZE ? (BLOCK_SIZE - offset % BLOCK_SIZE): size;
+        for (int i = 1; i <= ((int)(fpi->len) - 2); i++) { /* Start from second extent to one before last extent. */
+    	    fpi->tuple[i].node_id = metaFile->tuple[i].hashNode;
+	    fpi->tuple[i].offset = metaFile->tuple[i].indexExtentStartBlock * BLOCK_SIZE;
+	    fpi->tuple[i].size = BLOCK_SIZE;
+        }
+        fpi->tuple[fpi->len - 1].node_id = metaFile->tuple[metaFile->count - 1].hashNode;
+        fpi->tuple[fpi->len - 1].offset = metaFile->tuple[metaFile->count - 1].indexExtentStartBlock * BLOCK_SIZE;
+        fpi->tuple[fpi->len - 1].size = size - (fpi->len - 2) * BLOCK_SIZE - fpi->tuple[0].size;
+    }
+    Debug::debugItem("fillRDMARegion Done");
+}
 
 /* Read extent. That is to parse the part to read in file position information.
    @param   path    Path of file.
@@ -1537,6 +1693,10 @@ bool FileSystem::extentRead(const char *path, uint64_t size, uint64_t offset, fi
                             {
                                 size = metaFile.size - offset;
                             }
+			    uint32_t tier = 0; /* tier = metaFile.tier*/
+			    //FileMeta *NewmetaFile = (FileMeta *)malloc(sizeof(FileMeta));
+		 	    //copyAndPrepareMeta(&metaFile, tier, NewmetaFile);
+			    //fillFilePositionInformation(size, offset, fpi, NewmetaFile);
                             fillFilePositionInformation(size, offset, fpi, &metaFile); /* Fill file position information. */
                             result = true; /* Succeed. */
                         }
@@ -1596,7 +1756,7 @@ bool FileSystem::extentWrite(const char *path, uint64_t size, uint64_t offset, f
 {
     Debug::debugTitle("FileSystem::write");
     Debug::debugItem("Stage 1. Entry point. Path: %s.", path);
-    Debug::debugItem("write, size = %x, offset = %x", size, offset);
+    Debug::debugItem("write, size = %ld, offset = %ld", (long)size, (long)offset);
     if ((path == NULL) || (fpi == NULL) || (key == NULL)) /* Judge if path, file position information buffer and key buffer are valid. */
         return false;                   /* Null parameter error. */
     else {
@@ -1654,7 +1814,7 @@ bool FileSystem::extentWrite(const char *path, uint64_t size, uint64_t offset, f
                                                 indexLastCreatedBlock = metaFile->tuple[boundCurrentExtraExtent].indexExtentStartBlock 
                                                 + metaFile->tuple[boundCurrentExtraExtent].countExtentBlock;
                                             }
-                                            Debug::debugItem("%d, %d, %d", 
+                                            Debug::debugItem("boundCurrentExtraExtent: %d, indexLastCreatedBlock: %d, indexCurrentExtraBlock: %d", 
                                             boundCurrentExtraExtent,
                                             indexLastCreatedBlock,
                                             indexCurrentExtraBlock);
@@ -1714,6 +1874,140 @@ bool FileSystem::extentWrite(const char *path, uint64_t size, uint64_t offset, f
             return result;              /* Return specific result. */
         }
     }
+    return false;
+}
+
+
+/* Move data from extra memory pool or SSD layer to RDMA Zone.
+ * @param   metaFile    Source Metadata of the file.
+ * @return              If operation succeeds then return true, otherwise return false.
+ */
+bool FileSystem::moveAndUpdateMeta(const char *path, FileMeta *metaFile) {
+    Debug::debugTitle("FileSystem::moveAndUpdateMeta");
+    int i,j,k;
+    uint64_t MemZoneBaseAddress = server->getMemoryManagerInstance()->getExtraDataAddress();
+    uint64_t RdmaZoneBaseAddress = server->getMemoryManagerInstance()->getDataAddress();
+    
+    for (i = 0; i < (int) metaFile->count; i++) {
+        for(j = 0; j < (int) metaFile->tuple[i].countExtentBlock; j++) {
+	    if(metaFile->tier == 0) {
+		Debug::debugItem("Move data to the memory tier, src = %ld, dest = %ld", (long)(RdmaZoneBaseAddress + metaFile->tuple[i].indexExtentStartBlock * BLOCK_SIZE), (long)metaFile->tuple[i].StorageAddress);
+  	        void *dest = (void *) (metaFile->tuple[i].StorageAddress);
+	        void *src  = (void *) (RdmaZoneBaseAddress + metaFile->tuple[i].indexExtentStartBlock * BLOCK_SIZE);
+		memcpy(dest, src, BLOCK_SIZE);
+		memset(&(metaFile->tuple[i]), 0, sizeof(metaFile->tuple[i]));
+		metaFile->tuple[i].isDirty = false;
+	    } else {
+		Debug::debugItem("Move data to the SSD tier");
+		char *key = (char *)malloc(sizeof(char) * (strlen(path) + 5));
+                sprintf(key, "%s_%d", path, i);
+                void *value  = (void *) (RdmaZoneBaseAddress + metaFile->tuple[i].indexExtentStartBlock * BLOCK_SIZE);
+                storage->db.set((const char *)key, sizeof(key), (const char *)value, BLOCK_SIZE);
+                Debug::debugItem("Move data to the SSD tier Done");
+	    }	    
+	}
+    }
+    metaFile->isNewFile = false;
+    metaFile->count = 0;
+}
+
+/* Move data from RDMA zone to extra memory pool or SSD layer.
+ * @param   path        Path of file.
+ * @param   tier        Storage tier the file resides.
+ * @return              If operation succeeds then return true, otherwise return false. */
+bool FileSystem::moveAndUpdateMeta(const char *path){
+    Debug::debugTitle("FileSystem::moveAndUpdateMeta");
+    Debug::debugItem("Stage 1. Entry point. Path: %s.", path);
+    int i,j,k;
+    int tier;
+    int writeTier = (int) tier;
+    if (path == NULL) { /* Judge if path and file meta buffer are valid. */
+        return false;                   /* Null parameter error. */
+    } else {
+        UniqueHash hashUnique;
+        HashTable::getUniqueHash(path, strlen(path), &hashUnique); /* Get unique hash. */
+        NodeHash hashNode = storage->getNodeHash(&hashUnique); /* Get node hash by unique hash. */
+        AddressHash hashAddress = HashTable::getAddressHash(&hashUnique); /* Get address hash by unique hash. */
+        if (checkLocal(hashNode) == true) { /* If local node. */
+            bool result;
+	    uint64_t key = lockWriteHashItem(hashNode, hashAddress);  /* Lock hash item. */
+
+	    {
+	        uint64_t indexFileMeta;
+                bool isDirectory;
+                if (storage->hashtable->get(&hashUnique, &indexFileMeta, &isDirectory) == false) { /* If path does not exist. */
+                    result = false;     /* Fail due to path does not exist. */
+                } else {
+		    Debug::debugItem("Stage 2. Get meta.");
+                    if (isDirectory == true) { /* If directory meta. */
+                        Debug::notifyError("Directory meta.");
+                        result = false; /* Fail due to not file. */
+                    } else {
+			Debug::debugItem("Stage 3. Ready to Get meta.");
+			FileMeta *metaFile = (FileMeta *)malloc(sizeof(FileMeta));
+			if (storage->tableFileMeta->get(indexFileMeta, metaFile) == false) {
+                            Debug::notifyError("Fail due to get file meta error.");
+                            result = false; /* Fail due to get file meta error. */
+                        } else {
+			    Debug::debugItem("Stage 3-1. meta.size = %d, Count of extents = %d", metaFile->size, metaFile->count);
+
+			    if (!metaFile->isNewFile) { /*If file is clean, return directly*/
+				if (metaFile->count == 0) {
+				    unlockWriteHashItem(key, hashNode, hashAddress);
+				    return true;
+				} else { /*Remove block allocated for read operation*/
+				    Debug::debugItem("Update clean blcok, remove block from RDMA region");
+				    for (i = 0; i < (int) metaFile->count; i++) {
+                                	for(j = 0; j < (int) metaFile->tuple[i].countExtentBlock; j++) {
+					    storage->tableBlock->remove(metaFile->tuple[i].indexExtentStartBlock + j);
+					}
+				    }
+				    unlockWriteHashItem(key, hashNode, hashAddress);
+                                    return true;
+				}
+			    }
+
+			    /*Initilize the NewmetaFile*/
+			    uint64_t MemZoneBaseAddress = server->getMemoryManagerInstance()->getExtraDataAddress();
+			    uint64_t RdmaZoneBaseAddress = server->getMemoryManagerInstance()->getDataAddress();
+
+			    for (i = 0; i < (int) metaFile->count; i++) {
+				for(j = 0; j < (int) metaFile->tuple[i].countExtentBlock; j++) {
+				    if(metaFile->tier == 0) {
+                			Debug::debugItem("Move data to the memory tier, src = %ld, dest = %ld", (long)(RdmaZoneBaseAddress + metaFile->tuple[i].indexExtentStartBlock * BLOCK_SIZE), (long)metaFile->tuple[i].StorageAddress);
+					Debug::debugItem("RdmaZoneBaseAddress = %ld, indexCurrentExtraBlock = %ld", (long)RdmaZoneBaseAddress, (long)metaFile->tuple[i].indexExtentStartBlock);
+			                void *dest = (void *) (metaFile->tuple[i].StorageAddress);
+			                void *src  = (void *) (RdmaZoneBaseAddress + metaFile->tuple[i].indexExtentStartBlock * BLOCK_SIZE);
+			                memcpy(dest, src, BLOCK_SIZE);
+			            } else {
+			                Debug::debugItem("Move data to the SSD tier");
+					char *key = (char *)malloc(sizeof(char) * (strlen(path) + 5));
+					sprintf(key, "%s_%d", path, i);
+					void *value  = (void *) (RdmaZoneBaseAddress + metaFile->tuple[i].indexExtentStartBlock * BLOCK_SIZE);
+					storage->db.set((const char *)key, sizeof(key), (const char *)value, BLOCK_SIZE);
+					Debug::debugItem("Move data to the SSD tier Done");
+			            }
+				    memset(&(metaFile->tuple[i]), 0, sizeof(metaFile->tuple[i]));
+                                    storage->tableBlock->remove(metaFile->tuple[i].indexExtentStartBlock + j);
+                                    metaFile->tuple[i].isDirty = false;
+				}
+			    }
+			    metaFile->count = 0;
+			    metaFile->isNewFile = false;
+			    /*Update tableFileMeta*/
+			    Debug::debugItem("Stage 6-3, Update tableFileMeta");
+  	                    storage->tableFileMeta->put(indexFileMeta, metaFile);
+
+		            unlockWriteHashItem(key, hashNode, hashAddress); /*Unlock hash item*/
+
+			    Debug::debugItem("FileSystem::moveAndUpdateMeta Succeed");
+		            return true; /* Succeed. */
+			}
+		    } /*End: if (isDirectory == true)*/
+		} /*End: if (storage->hashtable->get(&hashUnique, &indexFileMeta, &isDirectory) == false)*/
+	    }
+        } /*End: if local node*/
+    } /*End: if path not null*/
     return false;
 }
 
@@ -2087,6 +2381,11 @@ bool FileSystem::removecd(const char *path, FileMeta *metaFile)
 	                                    }
 	                                }
 	                            }
+				    for(uint64_t i = 0; i < (metaFile->size / BLOCK_SIZE); i++) {
+					if(storage->extraTableBlock->remove(metaFile->StorageTuple[i].indexExtentStartBlock) == false) {
+					    ;
+					}
+				    }
 	                            if (resultFor == false) {
 	                                result = false; /* Fail due to block remove error. */
 	                            } else {
@@ -2374,6 +2673,241 @@ void FileSystem::rootInitialize(NodeHash LocalNode)
     }
 }
 
+/*Read extent. That is to parse the part to read in file position information.
+   @param   path    Path of file.
+   @param   size    Size of data to read.
+   @param   offset  Offset of data to read.
+   @param   fpi     File position information buffer.
+   @return          If operation succeeds then return true, otherwise return false. */
+bool FileSystem::extentReadV2(const char *path, uint64_t size, uint64_t offset, file_pos_info *fpi, uint64_t *key_offset, uint64_t *key) {
+    Debug::debugTitle("FileSystem::read");
+    Debug::debugItem("Stage 1. Entry point. Path: %s.", path);
+    if ((path == NULL) || (fpi == NULL) || (size == 0) || (key == NULL)) { /* Judge if path and file position information buffer are valid or size to read is valid. */
+	return false;
+    } else {
+	UniqueHash hashUnique;
+	HashTable::getUniqueHash(path, strlen(path), &hashUnique); /* Get unique hash. */
+        NodeHash hashNode = storage->getNodeHash(&hashUnique); /* Get node hash by unique hash. */
+        AddressHash hashAddress = HashTable::getAddressHash(&hashUnique); /* Get address hash by unique hash. */
+        if (checkLocal(hashNode) == true) { /* If local node. */
+	    bool result;
+            *key = lockReadHashItem(hashNode, hashAddress); /* Lock hash item. */
+            *key_offset = hashAddress;
+	    {
+		uint64_t indexFileMeta;
+                bool isDirectory;
+                if (storage->hashtable->get(&hashUnique, &indexFileMeta, &isDirectory) == false) { /* If path does not exist. */
+                    result = false;     /* Fail due to path does not exist. */
+                } else {
+		    Debug::debugItem("Stage 2. Get meta.");
+                    if (isDirectory == true) { /* If directory meta. */
+                        Debug::notifyError("Directory meta.");
+                        result = false; /* Fail due to not file. */
+                    } else {
+			FileMeta metaFile;
+                        Debug::debugItem("Stage 3. Get Filemeta index.");
+                        if (storage->tableFileMeta->get(indexFileMeta, &metaFile) == false) {
+                            Debug::notifyError("Fail due to get file meta error.");
+                            result = false; /* Fail due to get file meta error. */
+                        } else {
+			    Debug::debugItem("Stage 3-1. meta.size = %d, size = %d, offset = %d", metaFile.size, size, offset);
+			    if (offset + 1 > metaFile.size) { /* Judge if offset and size are valid. */
+                                fpi->len = 0;
+                                return true;
+                            }
+                            else if((metaFile.size - offset) < size)
+                            {
+                                size = metaFile.size - offset;
+                            }
+
+			    /*Make sure that all blocks to be read are resides in RDMA region*/
+			    for (uint64_t i = offset / BLOCK_SIZE; i < (offset + size - 1) / BLOCK_SIZE + 1; i++ ) {
+         			if (!metaFile.tuple[i].isDirty) {
+				    Debug::debugItem("Fill RDMA region once, Block ID is %d", (int)i);
+				    fillRDMARegionV2(i, &metaFile, path);
+				}
+        		    }
+			    fillFilePositionInformation(size, offset, fpi, &metaFile);
+			    result = true;
+			    if(result)
+                            {
+                                metaFile.timeLastModified = time(NULL);
+                                storage->tableFileMeta->put(indexFileMeta, &metaFile);
+                                Debug::debugItem("Stage 4, put metaFile to the table");
+                            }
+			    Debug::debugItem("Stage end.");
+			    return result;
+			}
+		    }
+		}
+	    } /*End main part*/
+	} /*End if local node*/
+    } /*End if path exists*/
+    return false;
+}
+
+/* Write extent. That is to parse the part to write in file position information. Attention: do not unlock here. Unlock is implemented in updateMeta.
+   @param   path        Path of file.
+   @param   size        Size of data to write.
+   @param   offset      Offset of data to write.
+   @param   fpi         File position information.
+   @param   metaFile    File meta buffer.
+   @param   key         Key buffer to unlock.
+   @return              If operation succeeds then return true, otherwise return false.*/
+bool FileSystem::extentWriteV2(const char *path, uint64_t size, uint64_t offset, file_pos_info *fpi, uint64_t *key_offset, uint64_t *key) {
+    Debug::debugTitle("FileSystem::write");
+    Debug::debugItem("Stage 1. Entry point. Path: %s.", path);
+    Debug::debugItem("write, size = %ld, offset = %ld", (long)size, (long)offset);
+    int tier = 0;
+    if ((path == NULL) || (fpi == NULL) || (key == NULL)) { /* Judge if path, file position information buffer and key buffer are valid. */
+        return false;
+    } else {
+	UniqueHash hashUnique;
+        HashTable::getUniqueHash(path, strlen(path), &hashUnique); /* Get unique hash. */
+        NodeHash hashNode = storage->getNodeHash(&hashUnique); /* Get node hash by unique hash. */
+        AddressHash hashAddress = HashTable::getAddressHash(&hashUnique); /* Get address hash by unique hash. */
+	if (checkLocal(hashNode) == true) { /* If local node. */
+	    bool result;
+            *key = lockWriteHashItem(hashNode, hashAddress);  /* Lock hash item. */
+            *key_offset = hashAddress;
+	    {
+		 uint64_t indexFileMeta;
+                bool isDirectory;
+                FileMeta *metaFile = (FileMeta *)malloc(sizeof(FileMeta));
+                if (storage->hashtable->get(&hashUnique, &indexFileMeta, &isDirectory) == false) { /* If path does not exist. */
+		    result = false;     /* Fail due to path does not exist. */
+		} else {
+		    Debug::debugItem("Stage 2. Get meta.");
+                    if (isDirectory == true) { /* If directory meta. */
+                        result = false; /* Fail due to not file. */
+                    } else {
+			if (storage->tableFileMeta->get(indexFileMeta, metaFile) == false) {
+                            result = false; /* Fail due to get file meta error. */
+                        } else { 
+			    if (((0xFFFFFFFFFFFFFFFF - offset) < size) || (size == 0)) {
+                                result = false; /* Fail due to offset + size will cause overflow or size is zero. */
+                            } else {
+				Debug::debugItem("Stage 3.");
+				if ((metaFile->size == 0) || ((offset + size - 1) / BLOCK_SIZE > (metaFile->size - 1) / BLOCK_SIZE)) { /* Judge if new blocks need to be created. */
+
+				    if (tier == 0) { /*If move data to memory tier*/
+					metaFile->tier = 0;
+					Debug::debugItem("Stage 3-1. Init memory tier data structure");
+					uint64_t MemZoneBaseAddress = server->getMemoryManagerInstance()->getExtraDataAddress();
+					uint64_t countExtraBlock; /* Count of extra blocks. At least 1. */
+					uint64_t BlockID;
+					/* Consider 0 size file. */
+                                        Debug::debugItem("Stage 4. metaFile->size = %ld", (long)metaFile->size);
+					if (metaFile->size == 0) {
+					    BlockID = 0;
+					    countExtraBlock = (offset + size - 1) / BLOCK_SIZE + 1;
+	                                    Debug::debugItem("Stage 4-1, countExtraBlock = %d, BLOCK_SIZE = %d", countExtraBlock, BLOCK_SIZE);
+					} else {
+					    BlockID = (int64_t)metaFile->count;
+					    countExtraBlock = (offset + size - 1) / BLOCK_SIZE - (metaFile->size - 1) / BLOCK_SIZE;
+					}
+					uint64_t indexCurrentExtraBlock;
+					uint64_t indexCurrentMemBlock;
+					Debug::debugItem("Stage 5.");
+                                        bool resultFor = true;
+					/*Allocate block for the wrtie data*/
+					for (uint64_t i = 0; i < countExtraBlock; i++) {
+					    Debug::debugItem("for loop, i = %d, BlockID = %d, countExtraBlock = %d", i, (int)BlockID + 1, (int)countExtraBlock);
+					    if ((storage->tableBlock->create(&indexCurrentExtraBlock) == false) || (storage->extraTableBlock->create(&indexCurrentMemBlock) == false)) {
+						Debug::notifyError("Allocate blcok Error");
+                                                resultFor = false; /* Fail due to no enough space. Might cause inconsistency. */
+                                                break;
+                                            } else { /* So we need to modify the allocation way in table class. */
+						metaFile->StorageTuple[BlockID].hashNode = hashLocalNode;
+						metaFile->StorageTuple[BlockID].indexExtentStartBlock = indexCurrentMemBlock;
+						metaFile->StorageTuple[BlockID].BlockID = BlockID;
+						metaFile->tuple[BlockID].hashNode = hashLocalNode; /* Assign local node hash. */
+                                                metaFile->tuple[BlockID].indexExtentStartBlock = indexCurrentExtraBlock; /* Assign start block in extent. */
+                                                metaFile->tuple[BlockID].countExtentBlock = 1; /* Assign count of block in extent. */
+						metaFile->tuple[BlockID].isDirty = true; /*This block is dirty in RDMA region*/
+						metaFile->tuple[BlockID].StorageAddress = MemZoneBaseAddress + indexCurrentMemBlock * BLOCK_SIZE;
+						Debug::debugItem("Memory tier address : %ld", (long)metaFile->tuple[BlockID].StorageAddress);
+						BlockID ++;
+						metaFile->count++;
+					    }  /*End if block is allocated in both RDMA and Memory region*/
+					} /*End for loop*/
+
+				    } else { /*Else move data to SSD tier*/
+					Debug::debugItem("Stage 3-1. Write to SSD tier");
+					metaFile->tier = 1;
+					uint64_t countExtraBlock; /* Count of extra blocks. At least 1. */
+                                        uint64_t BlockID;
+                                        /* Consider 0 size file. */
+                                        Debug::debugItem("Stage 4. metaFile->size = %ld", (long)metaFile->size);
+					if (metaFile->size == 0) {
+                                            BlockID = 0;
+                                            countExtraBlock = (offset + size - 1) / BLOCK_SIZE + 1;
+                                            Debug::debugItem("Stage 4-1, countExtraBlock = %d, BLOCK_SIZE = %d", countExtraBlock, BLOCK_SIZE);
+                                        } else {
+                                            BlockID = (int64_t)metaFile->count;
+                                            countExtraBlock = (offset + size - 1) / BLOCK_SIZE - (metaFile->size - 1) / BLOCK_SIZE;
+                                        }
+					uint64_t indexCurrentExtraBlock;
+					Debug::debugItem("Stage 5.");
+                                        bool resultFor = true;
+					/*Allocate block for the wrtie data*/
+                                        for (uint64_t i = 0; i < countExtraBlock; i++) {
+					    Debug::debugItem("for loop, i = %d, BlockID = %d, countExtraBlock = %d", i, (int)BlockID + 1, (int)countExtraBlock);
+					    if (storage->tableBlock->create(&indexCurrentExtraBlock) == false) {
+						Debug::notifyError("Allocate blcok Error");
+                                                resultFor = false; /* Fail due to no enough space. Might cause inconsistency. */
+                                                break;
+					    } else {
+						metaFile->tuple[BlockID].hashNode = hashLocalNode; /* Assign local node hash. */
+                                                metaFile->tuple[BlockID].indexExtentStartBlock = indexCurrentExtraBlock; /* Assign start block in extent. */
+                                                metaFile->tuple[BlockID].countExtentBlock = 1; /* Assign count of block in extent. */
+                                                metaFile->tuple[BlockID].isDirty = true; /*This block is dirty in RDMA region*/
+                                                metaFile->tuple[BlockID].StorageAddress = 0;
+                                                Debug::debugItem("Memory tier address : %ld", (long)metaFile->tuple[BlockID].StorageAddress);
+                                                BlockID ++;
+                                                metaFile->count++;
+					    } /*End if block is allocated in both RDMA and Memory region*/
+					} /*End for loop*/
+				    } /*End storage tier*/
+
+				    metaFile->size = offset + size;
+                                    fillFilePositionInformation(size, offset, fpi, metaFile); /* Fill file position information. */
+                                    result = true;
+				} else {
+				    /*Fill RDMA Zone*/
+				    Debug::debugItem("Stage 3-B. Write data to existing file");
+				    metaFile->size = (offset + size) > metaFile->size ? (offset + size) : metaFile->size;
+				    /*Make sure that all blocks to be read are resides in RDMA region*/
+	                            for (uint64_t i = offset / BLOCK_SIZE; i < (offset + size - 1) / BLOCK_SIZE + 1; i++ ) {
+        	                        if (!metaFile->tuple[i].isDirty) {
+                	                    fillRDMARegionV2(i, metaFile, path);
+					    Debug::debugItem("Fill RDMA region once, Block ID is %d", (int)i);
+                        	        }
+	                            }
+        	                    fillFilePositionInformation(size, offset, fpi, metaFile);
+				    metaFile->isNewFile = true;
+				    result = true;
+				} /*End if new block need to be created*/
+			    } /*End if write size is valid*/
+			    if(result)
+		            {
+                	        metaFile->timeLastModified = time(NULL);
+		                storage->tableFileMeta->put(indexFileMeta, metaFile);
+				Debug::debugItem("Stage 5, put metaFile to the table");
+                	    }
+			    Debug::debugItem("Stage 6. meta.size = %ld",(long) metaFile->size);
+	                    free(metaFile);
+			    Debug::debugItem("Stage end.");
+			    return result;
+			} /*End if get file meta succeed*/
+		    } /*End if it is file meta*/
+		} /*End if path indexMeta exists*/
+	    } /*End main part*/
+	} /*End if local node*/
+    } /*End if path exists*/
+}
+
+
 /* Constructor of file system. 
    @param   buffer              Buffer of memory.
    @param   countFile           Max count of file.
@@ -2381,7 +2915,7 @@ void FileSystem::rootInitialize(NodeHash LocalNode)
    @param   countBlock          Max count of blocks. 
    @param   countNode           Max count of nodes.
    @param   hashLocalNode       Local node hash. From 1 to countNode. */
-FileSystem::FileSystem(char *buffer, char *bufferBlock, uint64_t countFile,
+FileSystem::FileSystem(char *buffer, char *bufferBlock, char *extraBlock, uint64_t countFile,
                        uint64_t countDirectory, uint64_t countBlock, 
                        uint64_t countNode, NodeHash hashLocalNode)
 {
@@ -2393,7 +2927,7 @@ FileSystem::FileSystem(char *buffer, char *bufferBlock, uint64_t countFile,
         exit(EXIT_FAILURE);             /* Exit due to parameter error. */
     } else {
         this->addressHashTable = (uint64_t)buffer;
-        storage = new Storage(buffer, bufferBlock, countFile, countDirectory, countBlock, countNode); /* Initialize storage instance. */
+        storage = new Storage(buffer, bufferBlock, extraBlock, countFile, countDirectory, countBlock, countNode); /* Initialize storage instance. */
 	printf("Debug-FileSystem.cpp: Storage init done\n");
         lock = new LockService((uint64_t)buffer);
 	printf("Debug-FileSystem.cpp: lock service done\n");

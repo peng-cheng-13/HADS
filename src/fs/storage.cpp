@@ -55,7 +55,7 @@ NodeHash Storage::getNodeHash(UniqueHash *hashUnique)
    @param   countDirectory  Max count of directories.
    @param   countBlock      Max count of blocks.
    @param   countNode       Count of nodes. */
-Storage::Storage(char *buffer, char* bufferBlock, uint64_t countFile, uint64_t countDirectory, uint64_t countBlock, uint64_t countNode)
+Storage::Storage(char *buffer, char* bufferBlock, char *extraBlock, uint64_t countFile, uint64_t countDirectory, uint64_t countBlock, uint64_t countNode)
 {
     if ((buffer == NULL) || (bufferBlock == NULL) || (countFile == 0) || (countDirectory == 0) ||
         (countBlock == 0) || (countNode == 0)) {
@@ -64,19 +64,30 @@ Storage::Storage(char *buffer, char* bufferBlock, uint64_t countFile, uint64_t c
     } else {
         hashtable = new HashTable(buffer, countDirectory + countFile); /* Initialize hash table. */
         Debug::notifyInfo("sizeof Hash Table = %d MB", hashtable->sizeBufferUsed / 1024 / 1024);
+	Debug::notifyInfo("HashTable address : %ld",(long) buffer);
 
         tableFileMeta = new Table<FileMeta>(buffer + hashtable->sizeBufferUsed, countFile); /* Initialize file meta table. */
         Debug::notifyInfo("sizeof File Meta Size = %d MB", tableFileMeta->sizeBufferUsed / 1024 / 1024);
+	Debug::notifyInfo("FileMeta address : %ld",(long) (buffer + hashtable->sizeBufferUsed));
 
         tableDirectoryMeta = new Table<DirectoryMeta>(buffer + hashtable->sizeBufferUsed + tableFileMeta->sizeBufferUsed, countDirectory); /* Initialize directory meta table. */
         Debug::notifyInfo("sizeof Directory Meta Size = %d MB", tableDirectoryMeta->sizeBufferUsed / 1024 / 1024);
-	printf("Debug-Storage.cpp: tableBlock ready\n");
-        tableBlock = new Table<Block>(bufferBlock, countBlock); /* Initialize block table. */
-        printf("Debug-Storage.cpp: tableBlock done\n");
+	Debug::notifyInfo("Directory Meta address : %ld", (long)(buffer + hashtable->sizeBufferUsed + tableFileMeta->sizeBufferUsed));
+
+
+        tableBlock = new Table<Block>(bufferBlock, countBlock / 4); /* Initialize block table. */
+        Debug::notifyInfo("Debug-Storage.cpp: tableBlock done, address : %ld", (long)bufferBlock);
+
+	extraTableBlock = new Table<Block>(extraBlock, countBlock);
+	Debug::notifyInfo("Extra data address : %ld", (long) extraBlock);
+
         this->countNode = countNode;    /* Assign count of nodes. */
 	printf("Debug-Storage.cpp: size init\n");
         sizeBufferUsed = hashtable->sizeBufferUsed + tableFileMeta->sizeBufferUsed + tableDirectoryMeta->sizeBufferUsed + tableBlock->sizeBufferUsed; /* Size of used bytes in buffer. */
         printf("Debug-Storage.cpp: size done\n");
+
+	db.open(DB_PATH, kyotocabinet::DirDB::OCREATE | kyotocabinet::DirDB::OWRITER);
+	printf("kyotocabinet Done\n");
     }
 }
 
@@ -87,4 +98,5 @@ Storage::~Storage()
     delete tableFileMeta;               /* Release memory for file meta table. */
     delete tableDirectoryMeta;          /* Release memory for directory meta table. */
     delete tableBlock;                  /* Release memory for block table. */
+    db.close();				/* Close database */
 }

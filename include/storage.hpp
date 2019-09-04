@@ -11,6 +11,8 @@
 #include "hashtable.hpp"                /* Hash table class. */
 #include "table.hpp"                    /* Table template. */
 #include "global.h"
+#include "kcdirdb.h"
+#include "kcdirdb.h"
 
 typedef struct                          /* Block structure. */
 {
@@ -34,9 +36,12 @@ public:
     Table<FileMeta> *tableFileMeta;     /* File meta table. */
     Table<DirectoryMeta> *tableDirectoryMeta; /* Directory meta table. */
     Table<Block> *tableBlock;           /* Block table. */
+    Table<Block> *extraTableBlock;      /*Extra Block table*/
     NodeHash getNodeHash(UniqueHash *hashUnique); /* Get node hash by unique hash. */
+
+    kyotocabinet::DirDB db;
     //NodeHash getNodeHash(const char *buffer); /* Get node hash. */
-    Storage(char *buffer, char *bufferBlock, uint64_t countFile, uint64_t countDirectory, uint64_t countBlock, uint64_t countNode); /* Constructor. */
+    Storage(char *buffer, char *bufferBlock, char *extraBlock, uint64_t countFile, uint64_t countDirectory, uint64_t countBlock, uint64_t countNode); /* Constructor. */
     ~Storage();                         /* Deconstructor. */
 };
 

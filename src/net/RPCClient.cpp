@@ -67,7 +67,6 @@ bool RPCClient::RdmaCall(uint16_t DesNodeID, char *bufferSend, uint64_t lengthSe
 	Debug::debugItem("sendBuffer = %lx, receiveBuffer = %lx, remoteRecvBuffer = %lx, ReceiveSize = %d", 
 		sendBuffer, receiveBuffer, remoteRecvBuffer, lengthReceive);
 	if (send->message == MESSAGE_DISCONNECT
-		|| send->message == MESSAGE_UPDATEMETA
 		|| send->message == MESSAGE_EXTENTREADEND) {
 		// socket->_RdmaBatchWrite(DesNodeID, sendBuffer, remoteRecvBuffer, lengthSend, imm, 1);
 		// socket->PollCompletion(DesNodeID, 1, &wc);
@@ -80,7 +79,7 @@ bool RPCClient::RdmaCall(uint16_t DesNodeID, char *bufferSend, uint64_t lengthSe
 			;
 	} else {
 		// gettimeofday(&startt,NULL);
-		while (recv->message != MESSAGE_RESPONSE) {
+		while (recv->message != MESSAGE_RESPONSE && recv->message != MESSAGE_NOTDIR) {
 			;
 			/* gettimeofday(&endd,NULL);
 			diff = 1000000 * (endd.tv_sec - startt.tv_sec) + endd.tv_usec - startt.tv_usec;

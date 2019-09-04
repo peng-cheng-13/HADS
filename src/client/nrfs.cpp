@@ -158,14 +158,15 @@ int nrfsDisconnect(nrfs fs)
 {
 	Debug::debugTitle("nrfsDisconnect");
 	GeneralSendBuffer sendBuffer;
-	GeneralReceiveBuffer receiveBuffer;
+	GeneralReceiveBuffer *receiveBuffer = (GeneralReceiveBuffer *)malloc(sizeof(GeneralReceiveBuffer));
 	sendBuffer.message = MESSAGE_DISCONNECT;
 	for(int i = 1; i <= client->getConfInstance()->getServerCount(); i++)
 	{
 		sendMessage(i, &sendBuffer, sizeof(GeneralSendBuffer),
-					&receiveBuffer, sizeof(GeneralReceiveBuffer));
+					receiveBuffer, sizeof(GeneralReceiveBuffer));
 	}
 	isConnected.store(false);
+	free(receiveBuffer);
 	// client->getRdmaSocketInstance()->NotifyPerformance();
 	// Debug::notifyInfo("WriteTime1 =  %d, WriteTime2  = %d, WriteTime3 = %d WriteTime4 = %d", 
 	// 	WriteTime1, WriteTime2, WriteTime3, WriteTime4);
@@ -382,6 +383,16 @@ int nrfsCloseFile(nrfs fs, nrfsFile file)
 {
 	Debug::debugTitle("nrfsCloseFile");
 	Debug::debugItem("nrfsCloseFile: %s", file);
+	UpdateMetaSendBuffer bufferUpdateMetaSend; /* Send buffer. */
+        bufferUpdateMetaSend.message = MESSAGE_UPDATEMETA; /* Assign message type. */
+        correct((char*)file, bufferUpdateMetaSend.path);
+        uint16_t node_id = get_node_id_by_path(bufferUpdateMetaSend.path);
+	GeneralReceiveBuffer bufferGeneralReceive; /* Receive buffer. */
+	sendMessage(node_id, &bufferUpdateMetaSend, sizeof(UpdateMetaSendBuffer),
+                                        &bufferGeneralReceive, sizeof(GeneralReceiveBuffer));
+        if(bufferGeneralReceive.result == true) {
+            printf("Debug-nrfs.cpp: nrfsCloseFile, MESSAGE_UPDATEMETA done!\n");
+        }
 	/* always success */
 	//free(file);
 	return 0;
@@ -411,10 +422,14 @@ int nrfsGetAttribute(nrfs fs, nrfsFile _file, FileMeta *attr)
 	
 	*attr = bufferGetAttributeReceive.attribute;
 	Debug::debugItem("nrfsGetAttribute, META.size = %d", attr->size);
-	if(bufferGetAttributeReceive.result)
-		return 0;
-	else
-		return -1;
+	if(bufferGetAttributeReceive.result) {
+	    if(bufferGetAttributeReceive.message == MESSAGE_NOTDIR) {
+		return 1;
+	    }
+	    return 0;
+	} else {
+	    return -1;
+	}
 }
 
 /**
@@ -437,10 +452,14 @@ int nrfsAccess(nrfs fs, const char* _path)
 	
 	sendMessage(node_id, &sendBuffer, sizeof(GeneralSendBuffer), 
 					&receiveBuffer, sizeof(GeneralReceiveBuffer));
-	if(receiveBuffer.result)
-		return 0;
-	else
-		return -1;
+	if(receiveBuffer.result) {
+	    if (receiveBuffer.message == MESSAGE_NOTDIR) {
+		return 1;
+	    }
+	    return 0;
+	} else {
+	    return -1;
+	}
 }
 
 /**
@@ -510,14 +529,22 @@ int nrfsWrite(nrfs fs, nrfsFile _file, const void* buffer, uint64_t size, uint64
 		WriteTime3 += diff;
 
 		gettimeofday(&start1, NULL);
-		UpdateMetaSendBuffer bufferUpdateMetaSend; /* Send buffer. */
-        bufferUpdateMetaSend.message = MESSAGE_UPDATEMETA; /* Assign message type. */
-		bufferUpdateMetaSend.key = bufferExtentWriteReceive.key; /* Assign key. */
-		bufferUpdateMetaSend.offset = bufferExtentWriteReceive.offset;
-        GeneralReceiveBuffer bufferGeneralReceive; /* Receive buffer. */
+		GeneralReceiveBuffer bufferGeneralReceive;
+		bufferGeneralReceive.result = true;
+		/*
+		UpdateMetaSendBuffer bufferUpdateMetaSend;  //Send buffer. 
+                bufferUpdateMetaSend.message = MESSAGE_UPDATEMETA;  //Assign message type. 
+	        correct((char*)_file, bufferUpdateMetaSend.path);
+		//bufferUpdateMetaSend.key = bufferExtentWriteReceive.key; // Assign key.
+		//bufferUpdateMetaSend.offset = bufferExtentWriteReceive.offset;
+	        GeneralReceiveBuffer bufferGeneralReceive; // Receive buffer. 
 
 		sendMessage(node_id, &bufferUpdateMetaSend, sizeof(UpdateMetaSendBuffer), 
 					&bufferGeneralReceive, sizeof(GeneralReceiveBuffer));
+		if(bufferGeneralReceive.result == true) {
+		    printf("Debug-nrfs.cpp: nrfsWrite, MESSAGE_UPDATEMETA done!\n");
+		}
+		*/
 		gettimeofday(&end1, NULL);
 		diff = 1000000 * (end1.tv_sec - start1.tv_sec) + end1.tv_usec - start1.tv_usec;
 		WriteTime4 += diff;
@@ -694,26 +721,33 @@ int nrfsDelete(nrfs fs, const char* _path)
 {
 	Debug::debugTitle("nrfsDelete");
 	int result = 0;
+	result = nrfsAccess(fs, _path);
+	if (result == -1) {
+	    Debug::notifyError("File dose not exist, remove file failed.");
+	    return result;
+	} else if (result == 1) {
+	    Debug::debugItem("Remove directory");
+	}
 
 	GeneralSendBuffer bufferGeneralSend; /* Send buffer. */
-    bufferGeneralSend.message = MESSAGE_REMOVE; /* Assign message type. */
+        bufferGeneralSend.message = MESSAGE_REMOVE; /* Assign message type. */
 
-    GetAttributeReceiveBuffer bufferReceive; /* Receive buffer. */
-
+        GetAttributeReceiveBuffer *bufferReceive = (GetAttributeReceiveBuffer *)malloc(sizeof(GetAttributeReceiveBuffer)); /* Receive buffer. */
+        Debug::debugItem("Size of GetAttributeReceiveBuffer = %d", sizeof(GetAttributeReceiveBuffer));
 	correct(_path, bufferGeneralSend.path);
 	uint16_t node_id = get_node_id_by_path(bufferGeneralSend.path);
 
 	sendMessage(node_id, &bufferGeneralSend, sizeof(GeneralSendBuffer), 
-					&bufferReceive, sizeof(GetAttributeReceiveBuffer));
-	if (bufferReceive.result == false) {
+					bufferReceive, sizeof(GetAttributeReceiveBuffer));
+	if (bufferReceive->result == false) {
 		Debug::notifyError("Remove file failed.");
 		result = 1;
-	} else if (bufferReceive.attribute.count != MAX_FILE_EXTENT_COUNT) {
-		for (uint64_t i = 0; i < bufferReceive.attribute.count; i++) {
-			if (((uint16_t)(bufferReceive.attribute.tuple[i].hashNode) != node_id) && (bufferReceive.attribute.tuple[i].hashNode != 0)) {
-				nrfsFreeBlock((uint16_t)(bufferReceive.attribute.tuple[i].hashNode),
-						bufferReceive.attribute.tuple[i].indexExtentStartBlock, 
-						bufferReceive.attribute.tuple[i].countExtentBlock);
+	} else if (bufferReceive->attribute.count != MAX_FILE_EXTENT_COUNT) {
+		for (uint64_t i = 0; i < bufferReceive->attribute.count; i++) {
+			if (((uint16_t)(bufferReceive->attribute.tuple[i].hashNode) != node_id) && (bufferReceive->attribute.tuple[i].hashNode != 0)) {
+				nrfsFreeBlock((uint16_t)(bufferReceive->attribute.tuple[i].hashNode),
+						bufferReceive->attribute.tuple[i].indexExtentStartBlock, 
+						bufferReceive->attribute.tuple[i].countExtentBlock);
 			}
 		}
 		result = 0;

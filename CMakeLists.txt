@@ -3,7 +3,7 @@ project(dmfs)
 
 # Compiler options
 set (CMAKE_C_FLAGS "-Wall -Wno-deprecated-declarations -Wsign-compare")
-set (CMAKE_CXX_FLAGS "-g ${CMAKE_C_FLAGS} -std=c++11 -Wall -O0 -DTHREAD -D_FILE_OFFSET_BITS=64 -libverbs -lfuse -I/usr/local/glex/include -L/usr/local/glex/lib -lglex -lpthread")
+set (CMAKE_CXX_FLAGS "-g ${CMAKE_C_FLAGS} -std=c++11 -Wall -O0 -DTHREAD -D_FILE_OFFSET_BITS=64 -libverbs -lfuse -I/usr/local/glex/include -L/usr/local/glex/lib -lglex -lpthread -I/BIGDATA/nsccgz_pcheng_1/install/kyotocabinet-1.2.77/include -L/BIGDATA/nsccgz_pcheng_1/install/kyotocabinet-1.2.77/lib -lkyotocabinet -lz -lstdc++ -lrt -lpthread -lm -lc ")
 
 option (SANITIZE "Turn on sanitization" OFF)
 if (SANITIZE)

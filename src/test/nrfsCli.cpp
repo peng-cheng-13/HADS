@@ -141,10 +141,13 @@ void do_cd()
     	memset(path, '\0', PATH_LEN);
     	strcpy(path, workPath);
     }
-    if(nrfsGetAttribute(fs, (nrfsFile)path, &attr))
-    {
+    int result = nrfsAccess(fs, path);
+    if(result == -1) {
     	printf("invalid path\n");
     	strcpy(path, oldPath);
+    } else if (result == 1) {
+	printf("This is a file, please check the path.\n");
+	strcpy(path, oldPath);
     }
 }
 void do_ls()

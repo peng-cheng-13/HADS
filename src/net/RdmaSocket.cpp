@@ -348,7 +348,7 @@ bool RdmaSocket::ConnectQueuePair(PeerSockData *peer) {
 
     /*------------  Change NodeID first -----------------------*/
     if (DataSyncwithSocket(peer->sock, sizeof(GlexExchangeID), (char *)&LocalID, (char *)&RemoteID) < 0) {
-        Debug::notifyError("failed to exchange connection data between sides");
+        Debug::notifyError("failed to exchange NodeID data between sides");
         rc = 1;
         goto ConnectQPExit;
     }
@@ -873,7 +873,7 @@ bool RdmaSocket::RdmaReceive(uint16_t NodeID, uint64_t SourceBuffer, uint64_t Bu
 	    return true;
 	    break;
 	case GLEX_NO_MP :
-	    printf("Debug-RdmaSocket.cpp: RdmaReceive GLEX_NO_MP\n");
+	    Debug::debugItem("Debug-RdmaSocket.cpp: RdmaReceive GLEX_NO_MP");
 	    break;
 	case GLEX_INVALID_PARAM :
 	    printf("Debug-RdmaSocket.cpp: RdmaReceive GLEX_INVALID_PARAM\n");

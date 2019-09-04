@@ -32,6 +32,8 @@ private:
     bool sendMessage(NodeHash hashNode, void *bufferSend, uint64_t lengthSend, /* Send message. */
                      void *bufferReceive, uint64_t lengthReceive);
     void fillFilePositionInformation(uint64_t size, uint64_t offset, file_pos_info *fpi, FileMeta *metaFile); /* Fill file position information for read and write. */
+    bool fillRDMARegion(uint64_t size, uint64_t offset, file_pos_info *fpi, FileMeta *metaFile); /* Copy data from Memory tier or SSD tier to the RDMA region, and fill file position information for read and write.*/
+    bool fillRDMARegionV2(uint64_t BlockID, FileMeta *metaFile, const char *path); /* Copy data from Memory tier or SSD tier to the RDMA region*/
     
 public:
     void rootInitialize(NodeHash LocalNode);
@@ -49,7 +51,7 @@ public:
     bool mknod2pc(const char *path);
     bool mknodcd(const char *path);
     bool getattr(const char *path, FileMeta *attribute); /* Get attributes. */
-    bool access(const char *path);      /* Check accessibility. */
+    bool access(const char *path, bool *isDirectory);      /* Check accessibility. */
     bool mkdir(const char *path);       /* Make directory. */
     bool mkdir2pc(const char *path);
     bool mkdircd(const char *path);
@@ -57,8 +59,10 @@ public:
     bool recursivereaddir(const char *path, int depth);
     bool readDirectoryMeta(const char *path, DirectoryMeta *meta, uint64_t *hashAddress, uint64_t *metaAddress, uint16_t *parentNodeID);
     bool extentRead(const char *path, uint64_t size, uint64_t offset, file_pos_info *fpi, uint64_t *key_offset, uint64_t *key); /* Allocate read extent. */
+    bool extentReadV2(const char *path, uint64_t size, uint64_t offset, file_pos_info *fpi, uint64_t *key_offset, uint64_t *key);
     bool extentReadEnd(uint64_t key, char* path);
     bool extentWrite(const char *path, uint64_t size, uint64_t offset, file_pos_info *fpi, uint64_t *key_offset, uint64_t *key); /* Allocate write extent. Unlock is implemented in updateMeta. */
+    bool extentWriteV2(const char *path, uint64_t size, uint64_t offset, file_pos_info *fpi, uint64_t *key_offset, uint64_t *key);
     bool updateMeta(const char *path, FileMeta *metaFile, uint64_t key); /* Update meta. Only unlock path due to lock in extentWrite. */
     bool truncate(const char *path, uint64_t size); /* Truncate. */
     bool remove(const char *path, FileMeta *metaFile);      /* Remove file or empty directory. */
@@ -72,7 +76,9 @@ public:
     uint64_t lockReadHashItem(NodeHash hashNode, AddressHash hashAddressIndex); /* Lock hash item for read. */
     void unlockReadHashItem(uint64_t key, NodeHash hashNode, AddressHash hashAddressIndex); /* Unlock hash item. */
     void updateRemoteMeta(uint16_t parentNodeID, DirectoryMeta *meta, uint64_t parentMetaAddress, uint64_t parentHashAddress);
-    FileSystem(char *buffer, char *bufferBlock, uint64_t countFile, /* Constructor of file system. */
+    bool moveAndUpdateMeta(const char *path); /*Move data to extra memory pool or SSD laer, and update metadata*/
+    bool moveAndUpdateMeta(const char *path, FileMeta *metaFile); /*Move data to extra memory pool or SSD laer, and update metadata*/
+    FileSystem(char *buffer, char *bufferBlock, char *extraBlock, uint64_t countFile, /* Constructor of file system. */
                uint64_t countDirectory, uint64_t countBlock, 
                uint64_t countNode, NodeHash hashLocalNode); 
     ~FileSystem();                      /* Destructor of file system. */

@@ -20,7 +20,7 @@ RPCServer::RPCServer(int _cqSize, int argc, char** argv) :cqSize(_cqSize) {
 	mm = 0;
 	UnlockWait = false;
 	conf = new Configuration();
-	mem = new MemoryManager(mm, conf->getServerCount(), 512);
+	mem = new MemoryManager(mm, conf->getServerCount(), 1536);
 	mm = mem->getDmfsBaseAddress();
 	Debug::notifyInfo("DmfsBaseAddress = %lx, DmfsTotalSize = %ld",
 		mem->getDmfsBaseAddress(), (long) mem->getDmfsTotalSize());
@@ -30,11 +30,13 @@ RPCServer::RPCServer(int _cqSize, int argc, char** argv) :cqSize(_cqSize) {
 	tx = new TxManager(mem->getLocalLogAddress(), mem->getDistributedLogAddress());
 	socket->RdmaListen();
         printf("Debug-RPCServer.cpp: countNode = %ld, NodeHash = %ld \n", (long)conf->getServerCount(), (long)socket->getNodeID());
+	uint64_t maxBlockCount = (uint64_t)EXTRADATASIZE * 1024 * 1024 / BLOCK_SIZE;
 	fs = new FileSystem((char *)mem->getMetadataBaseAddress(),
               (char *)mem->getDataAddress(),
-              1024 * 20,/* Constructor of file system. */
-              1024 * 30,
-              256,
+              (char *)mem->getExtraDataAddress(),
+              1024,/* Constructor of file system. */
+              1024,
+              maxBlockCount,
               conf->getServerCount(),    
               socket->getNodeID());
 	printf("Debug-RPCServer.cpp: ready to rootInitialize ");
@@ -171,12 +173,7 @@ void RPCServer::ProcessRequest(GeneralSendBuffer *send, uint16_t NodeID, uint16_
           return;
 	} else if (send->message == MESSAGE_TEST) {
     	  ;
-	} else if (send->message == MESSAGE_UPDATEMETA) {
-    	/* Write unlock. */
-    	// UpdateMetaSendBuffer *bufferSend = (UpdateMetaSendBuffer *)send;
-    	// fs->unlockWriteHashItem(bufferSend->key, NodeID, bufferSend->offset);
-      	  return;
-	    } else if (send->message == MESSAGE_EXTENTREADEND) {
+	} else if (send->message == MESSAGE_EXTENTREADEND) {
     	/* Read unlock */
     	// ExtentReadEndSendBuffer *bufferSend = (ExtentReadEndSendBuffer *)send;
     	// fs->unlockReadHashItem(bufferSend->key, NodeID, bufferSend->offset);
@@ -282,6 +279,18 @@ uint64_t RPCServer::ContractReceiveBuffer(GeneralSendBuffer *send, GeneralReceiv
 			else 
 				length = MAX_DIRECTORY_COUNT * sizeof(DirectoryMetaTuple);
 			break;
+		}
+		case MESSAGE_REMOVE: {
+			//GetAttributeReceiveBuffer *bufferRecv = (GetAttributeReceiveBuffer *)recv;
+			length = 0;
+			break;
+			/*
+			if (bufferRecv->attribute.count >= 0 && bufferRecv->attribute.count < MAX_FILE_EXTENT_COUNT)
+                                length = (MAX_FILE_EXTENT_COUNT - bufferRecv->attribute.count) * sizeof(FileMetaTuple);
+                        else
+                                length = sizeof(FileMetaTuple) * MAX_FILE_EXTENT_COUNT;
+                        break;
+			*/
 		}
 		default: {
 			length = 0;

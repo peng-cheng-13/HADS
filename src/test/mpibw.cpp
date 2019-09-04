@@ -57,7 +57,7 @@ void write_test(int size, int op_time)
 		nrfsRawWrite(fs, path, buf, size, 0);
 #endif
 #ifdef TEST_NRFS_IO
-		nrfsWrite(fs, path, buf, size, 0);
+		nrfsWrite(fs, path, buf, size, i*size);
 #endif
 	}
 	end = MPI_Wtime();
@@ -110,7 +110,7 @@ void read_test(int size, int op_time)
 #endif
 	}
 	end = MPI_Wtime();
-
+        nrfsCloseFile(fs, path);
 	MPI_Barrier ( MPI_COMM_WORLD );
 
 	*p = (int)((end - start) * 1000000);

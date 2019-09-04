@@ -6,6 +6,7 @@ MemoryManager::MemoryManager(uint64_t _mm, uint64_t _ServerCount,  int _DataSize
     if (_mm == 0) {
         /* Open Shared Memory. */
         /* Add Data Storage. */
+	uint64_t extraDataSize = (uint64_t)EXTRADATASIZE * (uint64_t)1024 * (uint64_t)1024;
         DMFSTotalSize = (uint64_t)_DataSize;
         DMFSTotalSize = DMFSTotalSize * 1024 * 1024;
         /* Add Metadata Storage. */
@@ -15,7 +16,7 @@ MemoryManager::MemoryManager(uint64_t _mm, uint64_t _ServerCount,  int _DataSize
         /* Add Server Message Pool. */
         DMFSTotalSize += 2*SERVER_MASSAGE_SIZE * SERVER_MASSAGE_NUM * ServerCount;
 	printf("Debug-mempool.cpp: DMFSTotalSize is %ld\n", (long)DMFSTotalSize);
-        shmid = shmget(SHARE_MEMORY_KEY, DMFSTotalSize + LOCALLOGSIZE + DISTRIBUTEDLOGSIZE, IPC_CREAT);
+        shmid = shmget(SHARE_MEMORY_KEY, DMFSTotalSize + LOCALLOGSIZE + DISTRIBUTEDLOGSIZE + extraDataSize, IPC_CREAT);
         if (shmid == -1) {
             Debug::notifyError("shmget error");
         }
@@ -24,7 +25,7 @@ MemoryManager::MemoryManager(uint64_t _mm, uint64_t _ServerCount,  int _DataSize
             Debug::notifyError("shmat error");
         }
         MemoryBaseAddress = (uint64_t)shmptr;
-        memset((void *)MemoryBaseAddress, '\0', DMFSTotalSize + LOCALLOGSIZE + DISTRIBUTEDLOGSIZE);
+        memset((void *)MemoryBaseAddress, '\0', DMFSTotalSize + LOCALLOGSIZE + DISTRIBUTEDLOGSIZE + extraDataSize);
     }
     ClientBaseAddress = MemoryBaseAddress;
     ServerSendBaseAddress = MemoryBaseAddress + CLIENT_MESSAGE_SIZE * MAX_CLIENT_NUMBER;
@@ -36,6 +37,8 @@ MemoryManager::MemoryManager(uint64_t _mm, uint64_t _ServerCount,  int _DataSize
     LocalLogAddress += DataBaseAddress;
     Debug::debugItem("LocalLogAddress = %lx", LocalLogAddress);
     DistributedLogAddress = LocalLogAddress + LOCALLOGSIZE;
+    /*Extra memory pool to save data*/
+    ExtraDataAddress = DistributedLogAddress + DISTRIBUTEDLOGSIZE;
     SendPoolPointer = (uint8_t *)malloc(sizeof(uint8_t) * ServerCount);
     memset((void *)SendPoolPointer, '\0', sizeof(uint8_t) * ServerCount);
 }
@@ -92,6 +95,10 @@ uint64_t MemoryManager::getLocalLogAddress() {
 
 uint64_t MemoryManager::getDistributedLogAddress() {
     return DistributedLogAddress;
+}
+
+uint64_t MemoryManager::getExtraDataAddress() {
+    return ExtraDataAddress;
 }
 
 void MemoryManager::setID(int ID) {

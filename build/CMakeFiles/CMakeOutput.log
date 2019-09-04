@@ -1,0 +1,315 @@
+The system is: Linux - 3.10.0-327.3.1.el7_lustre.x86_64 - x86_64
+Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+Compiler: /usr/bin/cc 
+Build flags: 
+Id flags: 
+
+The output was:
+0
+
+
+Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "a.out"
+
+The C compiler identification is GNU, found in "/BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles/2.8.12.2/CompilerIdC/a.out"
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+Compiler: /usr/bin/c++ 
+Build flags: 
+Id flags: 
+
+The output was:
+0
+
+
+Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "a.out"
+
+The CXX compiler identification is GNU, found in "/BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles/2.8.12.2/CompilerIdCXX/a.out"
+
+Determining if the C compiler works passed with the following output:
+Change Dir: /BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/gmake "cmTryCompileExec1913740651/fast"
+/usr/bin/gmake -f CMakeFiles/cmTryCompileExec1913740651.dir/build.make CMakeFiles/cmTryCompileExec1913740651.dir/build
+gmake[1]: Entering directory `/BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building C object CMakeFiles/cmTryCompileExec1913740651.dir/testCCompiler.c.o
+/usr/bin/cc    -o CMakeFiles/cmTryCompileExec1913740651.dir/testCCompiler.c.o   -c /BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles/CMakeTmp/testCCompiler.c
+Linking C executable cmTryCompileExec1913740651
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec1913740651.dir/link.txt --verbose=1
+/usr/bin/cc       CMakeFiles/cmTryCompileExec1913740651.dir/testCCompiler.c.o  -o cmTryCompileExec1913740651 -rdynamic 
+gmake[1]: Leaving directory `/BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles/CMakeTmp'
+
+
+Detecting C compiler ABI info compiled with the following output:
+Change Dir: /BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/gmake "cmTryCompileExec85628149/fast"
+/usr/bin/gmake -f CMakeFiles/cmTryCompileExec85628149.dir/build.make CMakeFiles/cmTryCompileExec85628149.dir/build
+gmake[1]: Entering directory `/BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building C object CMakeFiles/cmTryCompileExec85628149.dir/CMakeCCompilerABI.c.o
+/usr/bin/cc    -o CMakeFiles/cmTryCompileExec85628149.dir/CMakeCCompilerABI.c.o   -c /usr/share/cmake/Modules/CMakeCCompilerABI.c
+Linking C executable cmTryCompileExec85628149
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec85628149.dir/link.txt --verbose=1
+/usr/bin/cc     -v CMakeFiles/cmTryCompileExec85628149.dir/CMakeCCompilerABI.c.o  -o cmTryCompileExec85628149 -rdynamic  
+Using built-in specs.
+COLLECT_GCC=/usr/bin/cc
+COLLECT_LTO_WRAPPER=/usr/libexec/gcc/x86_64-redhat-linux/4.8.5/lto-wrapper
+Target: x86_64-redhat-linux
+Configured with: ../configure --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=http://bugzilla.redhat.com/bugzilla --enable-bootstrap --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-linker-hash-style=gnu --enable-languages=c,c++,objc,obj-c++,java,fortran,ada,go,lto --enable-plugin --enable-initfini-array --disable-libgcj --with-isl=/builddir/build/BUILD/gcc-4.8.5-20150702/obj-x86_64-redhat-linux/isl-install --with-cloog=/builddir/build/BUILD/gcc-4.8.5-20150702/obj-x86_64-redhat-linux/cloog-install --enable-gnu-indirect-function --with-tune=generic --with-arch_32=x86-64 --build=x86_64-redhat-linux
+Thread model: posix
+gcc version 4.8.5 20150623 (Red Hat 4.8.5-28) (GCC) 
+COMPILER_PATH=/usr/libexec/gcc/x86_64-redhat-linux/4.8.5/:/usr/libexec/gcc/x86_64-redhat-linux/4.8.5/:/usr/libexec/gcc/x86_64-redhat-linux/:/usr/lib/gcc/x86_64-redhat-linux/4.8.5/:/usr/lib/gcc/x86_64-redhat-linux/
+LIBRARY_PATH=/usr/lib/../lib64/:/usr/local/lib/../lib64/:/usr/lib/gcc/x86_64-redhat-linux/4.8.5/:/usr/lib/gcc/x86_64-redhat-linux/4.8.5/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/BIGDATA/nsccgz_pcheng_1/install/mpich/lib/:/usr/lib/:/usr/local/lib/:/home/condor/install/zlib/lib/:/home/condor/install/zlib/lib/:/home/condor/install/ncurses-5.9/lib/:/home/condor/install/bzip2-1.0.6/lib/:/home/condor/install/xz-5.2.3/lib/:./:/usr/lib/gcc/x86_64-redhat-linux/4.8.5/../../../:/lib/:/usr/lib/
+COLLECT_GCC_OPTIONS='-v' '-o' 'cmTryCompileExec85628149' '-rdynamic' '-mtune=generic' '-march=x86-64'
+ /usr/libexec/gcc/x86_64-redhat-linux/4.8.5/collect2 --build-id --no-add-needed --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -export-dynamic -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTryCompileExec85628149 /usr/lib/../lib64/crt1.o /usr/lib/../lib64/crti.o /usr/lib/gcc/x86_64-redhat-linux/4.8.5/crtbegin.o -L/usr/lib/../lib64 -L/usr/local/lib/../lib64 -L/usr/lib/gcc/x86_64-redhat-linux/4.8.5 -L/usr/lib/gcc/x86_64-redhat-linux/4.8.5/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/BIGDATA/nsccgz_pcheng_1/install/mpich/lib -L/usr/local/lib -L/home/condor/install/zlib/lib -L/home/condor/install/zlib/lib -L/home/condor/install/ncurses-5.9/lib -L/home/condor/install/bzip2-1.0.6/lib -L/home/condor/install/xz-5.2.3/lib -L. -L/usr/lib/gcc/x86_64-redhat-linux/4.8.5/../../.. CMakeFiles/cmTryCompileExec85628149.dir/CMakeCCompilerABI.c.o -lgcc --as-needed -lgcc_s --no-as-needed -lc -lgcc --as-needed -lgcc_s --no-as-needed /usr/lib/gcc/x86_64-redhat-linux/4.8.5/crtend.o /usr/lib/../lib64/crtn.o
+gmake[1]: Leaving directory `/BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles/CMakeTmp'
+
+
+Parsed C implicit link information from above output:
+  link line regex: [^( *|.*[/\])(ld|([^/\]+-)?ld|collect2)[^/\]*( |$)]
+  ignore line: [Change Dir: /BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles/CMakeTmp]
+  ignore line: []
+  ignore line: [Run Build Command:/usr/bin/gmake "cmTryCompileExec85628149/fast"]
+  ignore line: [/usr/bin/gmake -f CMakeFiles/cmTryCompileExec85628149.dir/build.make CMakeFiles/cmTryCompileExec85628149.dir/build]
+  ignore line: [gmake[1]: Entering directory `/BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles/CMakeTmp']
+  ignore line: [/usr/bin/cmake -E cmake_progress_report /BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles/CMakeTmp/CMakeFiles 1]
+  ignore line: [Building C object CMakeFiles/cmTryCompileExec85628149.dir/CMakeCCompilerABI.c.o]
+  ignore line: [/usr/bin/cc    -o CMakeFiles/cmTryCompileExec85628149.dir/CMakeCCompilerABI.c.o   -c /usr/share/cmake/Modules/CMakeCCompilerABI.c]
+  ignore line: [Linking C executable cmTryCompileExec85628149]
+  ignore line: [/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec85628149.dir/link.txt --verbose=1]
+  ignore line: [/usr/bin/cc     -v CMakeFiles/cmTryCompileExec85628149.dir/CMakeCCompilerABI.c.o  -o cmTryCompileExec85628149 -rdynamic  ]
+  ignore line: [Using built-in specs.]
+  ignore line: [COLLECT_GCC=/usr/bin/cc]
+  ignore line: [COLLECT_LTO_WRAPPER=/usr/libexec/gcc/x86_64-redhat-linux/4.8.5/lto-wrapper]
+  ignore line: [Target: x86_64-redhat-linux]
+  ignore line: [Configured with: ../configure --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=http://bugzilla.redhat.com/bugzilla --enable-bootstrap --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-linker-hash-style=gnu --enable-languages=c,c++,objc,obj-c++,java,fortran,ada,go,lto --enable-plugin --enable-initfini-array --disable-libgcj --with-isl=/builddir/build/BUILD/gcc-4.8.5-20150702/obj-x86_64-redhat-linux/isl-install --with-cloog=/builddir/build/BUILD/gcc-4.8.5-20150702/obj-x86_64-redhat-linux/cloog-install --enable-gnu-indirect-function --with-tune=generic --with-arch_32=x86-64 --build=x86_64-redhat-linux]
+  ignore line: [Thread model: posix]
+  ignore line: [gcc version 4.8.5 20150623 (Red Hat 4.8.5-28) (GCC) ]
+  ignore line: [COMPILER_PATH=/usr/libexec/gcc/x86_64-redhat-linux/4.8.5/:/usr/libexec/gcc/x86_64-redhat-linux/4.8.5/:/usr/libexec/gcc/x86_64-redhat-linux/:/usr/lib/gcc/x86_64-redhat-linux/4.8.5/:/usr/lib/gcc/x86_64-redhat-linux/]
+  ignore line: [LIBRARY_PATH=/usr/lib/../lib64/:/usr/local/lib/../lib64/:/usr/lib/gcc/x86_64-redhat-linux/4.8.5/:/usr/lib/gcc/x86_64-redhat-linux/4.8.5/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/BIGDATA/nsccgz_pcheng_1/install/mpich/lib/:/usr/lib/:/usr/local/lib/:/home/condor/install/zlib/lib/:/home/condor/install/zlib/lib/:/home/condor/install/ncurses-5.9/lib/:/home/condor/install/bzip2-1.0.6/lib/:/home/condor/install/xz-5.2.3/lib/:./:/usr/lib/gcc/x86_64-redhat-linux/4.8.5/../../../:/lib/:/usr/lib/]
+  ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'cmTryCompileExec85628149' '-rdynamic' '-mtune=generic' '-march=x86-64']
+  link line: [ /usr/libexec/gcc/x86_64-redhat-linux/4.8.5/collect2 --build-id --no-add-needed --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -export-dynamic -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTryCompileExec85628149 /usr/lib/../lib64/crt1.o /usr/lib/../lib64/crti.o /usr/lib/gcc/x86_64-redhat-linux/4.8.5/crtbegin.o -L/usr/lib/../lib64 -L/usr/local/lib/../lib64 -L/usr/lib/gcc/x86_64-redhat-linux/4.8.5 -L/usr/lib/gcc/x86_64-redhat-linux/4.8.5/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/BIGDATA/nsccgz_pcheng_1/install/mpich/lib -L/usr/local/lib -L/home/condor/install/zlib/lib -L/home/condor/install/zlib/lib -L/home/condor/install/ncurses-5.9/lib -L/home/condor/install/bzip2-1.0.6/lib -L/home/condor/install/xz-5.2.3/lib -L. -L/usr/lib/gcc/x86_64-redhat-linux/4.8.5/../../.. CMakeFiles/cmTryCompileExec85628149.dir/CMakeCCompilerABI.c.o -lgcc --as-needed -lgcc_s --no-as-needed -lc -lgcc --as-needed -lgcc_s --no-as-needed /usr/lib/gcc/x86_64-redhat-linux/4.8.5/crtend.o /usr/lib/../lib64/crtn.o]
+    arg [/usr/libexec/gcc/x86_64-redhat-linux/4.8.5/collect2] ==> ignore
+    arg [--build-id] ==> ignore
+    arg [--no-add-needed] ==> ignore
+    arg [--eh-frame-hdr] ==> ignore
+    arg [--hash-style=gnu] ==> ignore
+    arg [-m] ==> ignore
+    arg [elf_x86_64] ==> ignore
+    arg [-export-dynamic] ==> ignore
+    arg [-dynamic-linker] ==> ignore
+    arg [/lib64/ld-linux-x86-64.so.2] ==> ignore
+    arg [-o] ==> ignore
+    arg [cmTryCompileExec85628149] ==> ignore
+    arg [/usr/lib/../lib64/crt1.o] ==> ignore
+    arg [/usr/lib/../lib64/crti.o] ==> ignore
+    arg [/usr/lib/gcc/x86_64-redhat-linux/4.8.5/crtbegin.o] ==> ignore
+    arg [-L/usr/lib/../lib64] ==> dir [/usr/lib/../lib64]
+    arg [-L/usr/local/lib/../lib64] ==> dir [/usr/local/lib/../lib64]
+    arg [-L/usr/lib/gcc/x86_64-redhat-linux/4.8.5] ==> dir [/usr/lib/gcc/x86_64-redhat-linux/4.8.5]
+    arg [-L/usr/lib/gcc/x86_64-redhat-linux/4.8.5/../../../../lib64] ==> dir [/usr/lib/gcc/x86_64-redhat-linux/4.8.5/../../../../lib64]
+    arg [-L/lib/../lib64] ==> dir [/lib/../lib64]
+    arg [-L/usr/lib/../lib64] ==> dir [/usr/lib/../lib64]
+    arg [-L/BIGDATA/nsccgz_pcheng_1/install/mpich/lib] ==> dir [/BIGDATA/nsccgz_pcheng_1/install/mpich/lib]
+    arg [-L/usr/local/lib] ==> dir [/usr/local/lib]
+    arg [-L/home/condor/install/zlib/lib] ==> dir [/home/condor/install/zlib/lib]
+    arg [-L/home/condor/install/zlib/lib] ==> dir [/home/condor/install/zlib/lib]
+    arg [-L/home/condor/install/ncurses-5.9/lib] ==> dir [/home/condor/install/ncurses-5.9/lib]
+    arg [-L/home/condor/install/bzip2-1.0.6/lib] ==> dir [/home/condor/install/bzip2-1.0.6/lib]
+    arg [-L/home/condor/install/xz-5.2.3/lib] ==> dir [/home/condor/install/xz-5.2.3/lib]
+    arg [-L.] ==> ignore
+    arg [-L/usr/lib/gcc/x86_64-redhat-linux/4.8.5/../../..] ==> dir [/usr/lib/gcc/x86_64-redhat-linux/4.8.5/../../..]
+    arg [CMakeFiles/cmTryCompileExec85628149.dir/CMakeCCompilerABI.c.o] ==> ignore
+    arg [-lgcc] ==> lib [gcc]
+    arg [--as-needed] ==> ignore
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [--no-as-needed] ==> ignore
+    arg [-lc] ==> lib [c]
+    arg [-lgcc] ==> lib [gcc]
+    arg [--as-needed] ==> ignore
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [--no-as-needed] ==> ignore
+    arg [/usr/lib/gcc/x86_64-redhat-linux/4.8.5/crtend.o] ==> ignore
+    arg [/usr/lib/../lib64/crtn.o] ==> ignore
+  remove lib [gcc]
+  remove lib [gcc_s]
+  remove lib [gcc]
+  remove lib [gcc_s]
+  collapse library dir [/usr/lib/../lib64] ==> [/usr/lib64]
+  collapse library dir [/usr/local/lib/../lib64] ==> [/usr/local/lib64]
+  collapse library dir [/usr/lib/gcc/x86_64-redhat-linux/4.8.5] ==> [/usr/lib/gcc/x86_64-redhat-linux/4.8.5]
+  collapse library dir [/usr/lib/gcc/x86_64-redhat-linux/4.8.5/../../../../lib64] ==> [/usr/lib64]
+  collapse library dir [/lib/../lib64] ==> [/lib64]
+  collapse library dir [/usr/lib/../lib64] ==> [/usr/lib64]
+  collapse library dir [/BIGDATA/nsccgz_pcheng_1/install/mpich/lib] ==> [/BIGDATA/nsccgz_pcheng_1/install/mpich/lib]
+  collapse library dir [/usr/local/lib] ==> [/usr/local/lib]
+  collapse library dir [/home/condor/install/zlib/lib] ==> [/home/condor/install/zlib/lib]
+  collapse library dir [/home/condor/install/zlib/lib] ==> [/home/condor/install/zlib/lib]
+  collapse library dir [/home/condor/install/ncurses-5.9/lib] ==> [/home/condor/install/ncurses-5.9/lib]
+  collapse library dir [/home/condor/install/bzip2-1.0.6/lib] ==> [/home/condor/install/bzip2-1.0.6/lib]
+  collapse library dir [/home/condor/install/xz-5.2.3/lib] ==> [/home/condor/install/xz-5.2.3/lib]
+  collapse library dir [/usr/lib/gcc/x86_64-redhat-linux/4.8.5/../../..] ==> [/usr/lib]
+  implicit libs: [c]
+  implicit dirs: [/usr/lib64;/usr/local/lib64;/usr/lib/gcc/x86_64-redhat-linux/4.8.5;/lib64;/BIGDATA/nsccgz_pcheng_1/install/mpich/lib;/usr/local/lib;/home/condor/install/zlib/lib;/home/condor/install/ncurses-5.9/lib;/home/condor/install/bzip2-1.0.6/lib;/home/condor/install/xz-5.2.3/lib;/usr/lib]
+  implicit fwks: []
+
+
+Determining if the CXX compiler works passed with the following output:
+Change Dir: /BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/gmake "cmTryCompileExec79678001/fast"
+/usr/bin/gmake -f CMakeFiles/cmTryCompileExec79678001.dir/build.make CMakeFiles/cmTryCompileExec79678001.dir/build
+gmake[1]: Entering directory `/BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec79678001.dir/testCXXCompiler.cxx.o
+/usr/bin/c++     -o CMakeFiles/cmTryCompileExec79678001.dir/testCXXCompiler.cxx.o -c /BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles/CMakeTmp/testCXXCompiler.cxx
+Linking CXX executable cmTryCompileExec79678001
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec79678001.dir/link.txt --verbose=1
+/usr/bin/c++        CMakeFiles/cmTryCompileExec79678001.dir/testCXXCompiler.cxx.o  -o cmTryCompileExec79678001 -rdynamic 
+gmake[1]: Leaving directory `/BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles/CMakeTmp'
+
+
+Detecting CXX compiler ABI info compiled with the following output:
+Change Dir: /BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/gmake "cmTryCompileExec1614880979/fast"
+/usr/bin/gmake -f CMakeFiles/cmTryCompileExec1614880979.dir/build.make CMakeFiles/cmTryCompileExec1614880979.dir/build
+gmake[1]: Entering directory `/BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec1614880979.dir/CMakeCXXCompilerABI.cpp.o
+/usr/bin/c++     -o CMakeFiles/cmTryCompileExec1614880979.dir/CMakeCXXCompilerABI.cpp.o -c /usr/share/cmake/Modules/CMakeCXXCompilerABI.cpp
+Linking CXX executable cmTryCompileExec1614880979
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec1614880979.dir/link.txt --verbose=1
+/usr/bin/c++      -v CMakeFiles/cmTryCompileExec1614880979.dir/CMakeCXXCompilerABI.cpp.o  -o cmTryCompileExec1614880979 -rdynamic  
+Using built-in specs.
+COLLECT_GCC=/usr/bin/c++
+COLLECT_LTO_WRAPPER=/usr/libexec/gcc/x86_64-redhat-linux/4.8.5/lto-wrapper
+Target: x86_64-redhat-linux
+Configured with: ../configure --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=http://bugzilla.redhat.com/bugzilla --enable-bootstrap --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-linker-hash-style=gnu --enable-languages=c,c++,objc,obj-c++,java,fortran,ada,go,lto --enable-plugin --enable-initfini-array --disable-libgcj --with-isl=/builddir/build/BUILD/gcc-4.8.5-20150702/obj-x86_64-redhat-linux/isl-install --with-cloog=/builddir/build/BUILD/gcc-4.8.5-20150702/obj-x86_64-redhat-linux/cloog-install --enable-gnu-indirect-function --with-tune=generic --with-arch_32=x86-64 --build=x86_64-redhat-linux
+Thread model: posix
+gcc version 4.8.5 20150623 (Red Hat 4.8.5-28) (GCC) 
+COMPILER_PATH=/usr/libexec/gcc/x86_64-redhat-linux/4.8.5/:/usr/libexec/gcc/x86_64-redhat-linux/4.8.5/:/usr/libexec/gcc/x86_64-redhat-linux/:/usr/lib/gcc/x86_64-redhat-linux/4.8.5/:/usr/lib/gcc/x86_64-redhat-linux/
+LIBRARY_PATH=/usr/lib/../lib64/:/usr/local/lib/../lib64/:/usr/lib/gcc/x86_64-redhat-linux/4.8.5/:/usr/lib/gcc/x86_64-redhat-linux/4.8.5/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/BIGDATA/nsccgz_pcheng_1/install/mpich/lib/:/usr/lib/:/usr/local/lib/:/home/condor/install/zlib/lib/:/home/condor/install/zlib/lib/:/home/condor/install/ncurses-5.9/lib/:/home/condor/install/bzip2-1.0.6/lib/:/home/condor/install/xz-5.2.3/lib/:./:/usr/lib/gcc/x86_64-redhat-linux/4.8.5/../../../:/lib/:/usr/lib/
+COLLECT_GCC_OPTIONS='-v' '-o' 'cmTryCompileExec1614880979' '-rdynamic' '-shared-libgcc' '-mtune=generic' '-march=x86-64'
+ /usr/libexec/gcc/x86_64-redhat-linux/4.8.5/collect2 --build-id --no-add-needed --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -export-dynamic -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTryCompileExec1614880979 /usr/lib/../lib64/crt1.o /usr/lib/../lib64/crti.o /usr/lib/gcc/x86_64-redhat-linux/4.8.5/crtbegin.o -L/usr/lib/../lib64 -L/usr/local/lib/../lib64 -L/usr/lib/gcc/x86_64-redhat-linux/4.8.5 -L/usr/lib/gcc/x86_64-redhat-linux/4.8.5/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/BIGDATA/nsccgz_pcheng_1/install/mpich/lib -L/usr/local/lib -L/home/condor/install/zlib/lib -L/home/condor/install/zlib/lib -L/home/condor/install/ncurses-5.9/lib -L/home/condor/install/bzip2-1.0.6/lib -L/home/condor/install/xz-5.2.3/lib -L. -L/usr/lib/gcc/x86_64-redhat-linux/4.8.5/../../.. CMakeFiles/cmTryCompileExec1614880979.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-redhat-linux/4.8.5/crtend.o /usr/lib/../lib64/crtn.o
+gmake[1]: Leaving directory `/BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles/CMakeTmp'
+
+
+Parsed CXX implicit link information from above output:
+  link line regex: [^( *|.*[/\])(ld|([^/\]+-)?ld|collect2)[^/\]*( |$)]
+  ignore line: [Change Dir: /BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles/CMakeTmp]
+  ignore line: []
+  ignore line: [Run Build Command:/usr/bin/gmake "cmTryCompileExec1614880979/fast"]
+  ignore line: [/usr/bin/gmake -f CMakeFiles/cmTryCompileExec1614880979.dir/build.make CMakeFiles/cmTryCompileExec1614880979.dir/build]
+  ignore line: [gmake[1]: Entering directory `/BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles/CMakeTmp']
+  ignore line: [/usr/bin/cmake -E cmake_progress_report /BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles/CMakeTmp/CMakeFiles 1]
+  ignore line: [Building CXX object CMakeFiles/cmTryCompileExec1614880979.dir/CMakeCXXCompilerABI.cpp.o]
+  ignore line: [/usr/bin/c++     -o CMakeFiles/cmTryCompileExec1614880979.dir/CMakeCXXCompilerABI.cpp.o -c /usr/share/cmake/Modules/CMakeCXXCompilerABI.cpp]
+  ignore line: [Linking CXX executable cmTryCompileExec1614880979]
+  ignore line: [/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec1614880979.dir/link.txt --verbose=1]
+  ignore line: [/usr/bin/c++      -v CMakeFiles/cmTryCompileExec1614880979.dir/CMakeCXXCompilerABI.cpp.o  -o cmTryCompileExec1614880979 -rdynamic  ]
+  ignore line: [Using built-in specs.]
+  ignore line: [COLLECT_GCC=/usr/bin/c++]
+  ignore line: [COLLECT_LTO_WRAPPER=/usr/libexec/gcc/x86_64-redhat-linux/4.8.5/lto-wrapper]
+  ignore line: [Target: x86_64-redhat-linux]
+  ignore line: [Configured with: ../configure --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=http://bugzilla.redhat.com/bugzilla --enable-bootstrap --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-linker-hash-style=gnu --enable-languages=c,c++,objc,obj-c++,java,fortran,ada,go,lto --enable-plugin --enable-initfini-array --disable-libgcj --with-isl=/builddir/build/BUILD/gcc-4.8.5-20150702/obj-x86_64-redhat-linux/isl-install --with-cloog=/builddir/build/BUILD/gcc-4.8.5-20150702/obj-x86_64-redhat-linux/cloog-install --enable-gnu-indirect-function --with-tune=generic --with-arch_32=x86-64 --build=x86_64-redhat-linux]
+  ignore line: [Thread model: posix]
+  ignore line: [gcc version 4.8.5 20150623 (Red Hat 4.8.5-28) (GCC) ]
+  ignore line: [COMPILER_PATH=/usr/libexec/gcc/x86_64-redhat-linux/4.8.5/:/usr/libexec/gcc/x86_64-redhat-linux/4.8.5/:/usr/libexec/gcc/x86_64-redhat-linux/:/usr/lib/gcc/x86_64-redhat-linux/4.8.5/:/usr/lib/gcc/x86_64-redhat-linux/]
+  ignore line: [LIBRARY_PATH=/usr/lib/../lib64/:/usr/local/lib/../lib64/:/usr/lib/gcc/x86_64-redhat-linux/4.8.5/:/usr/lib/gcc/x86_64-redhat-linux/4.8.5/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/BIGDATA/nsccgz_pcheng_1/install/mpich/lib/:/usr/lib/:/usr/local/lib/:/home/condor/install/zlib/lib/:/home/condor/install/zlib/lib/:/home/condor/install/ncurses-5.9/lib/:/home/condor/install/bzip2-1.0.6/lib/:/home/condor/install/xz-5.2.3/lib/:./:/usr/lib/gcc/x86_64-redhat-linux/4.8.5/../../../:/lib/:/usr/lib/]
+  ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'cmTryCompileExec1614880979' '-rdynamic' '-shared-libgcc' '-mtune=generic' '-march=x86-64']
+  link line: [ /usr/libexec/gcc/x86_64-redhat-linux/4.8.5/collect2 --build-id --no-add-needed --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -export-dynamic -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTryCompileExec1614880979 /usr/lib/../lib64/crt1.o /usr/lib/../lib64/crti.o /usr/lib/gcc/x86_64-redhat-linux/4.8.5/crtbegin.o -L/usr/lib/../lib64 -L/usr/local/lib/../lib64 -L/usr/lib/gcc/x86_64-redhat-linux/4.8.5 -L/usr/lib/gcc/x86_64-redhat-linux/4.8.5/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/BIGDATA/nsccgz_pcheng_1/install/mpich/lib -L/usr/local/lib -L/home/condor/install/zlib/lib -L/home/condor/install/zlib/lib -L/home/condor/install/ncurses-5.9/lib -L/home/condor/install/bzip2-1.0.6/lib -L/home/condor/install/xz-5.2.3/lib -L. -L/usr/lib/gcc/x86_64-redhat-linux/4.8.5/../../.. CMakeFiles/cmTryCompileExec1614880979.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-redhat-linux/4.8.5/crtend.o /usr/lib/../lib64/crtn.o]
+    arg [/usr/libexec/gcc/x86_64-redhat-linux/4.8.5/collect2] ==> ignore
+    arg [--build-id] ==> ignore
+    arg [--no-add-needed] ==> ignore
+    arg [--eh-frame-hdr] ==> ignore
+    arg [--hash-style=gnu] ==> ignore
+    arg [-m] ==> ignore
+    arg [elf_x86_64] ==> ignore
+    arg [-export-dynamic] ==> ignore
+    arg [-dynamic-linker] ==> ignore
+    arg [/lib64/ld-linux-x86-64.so.2] ==> ignore
+    arg [-o] ==> ignore
+    arg [cmTryCompileExec1614880979] ==> ignore
+    arg [/usr/lib/../lib64/crt1.o] ==> ignore
+    arg [/usr/lib/../lib64/crti.o] ==> ignore
+    arg [/usr/lib/gcc/x86_64-redhat-linux/4.8.5/crtbegin.o] ==> ignore
+    arg [-L/usr/lib/../lib64] ==> dir [/usr/lib/../lib64]
+    arg [-L/usr/local/lib/../lib64] ==> dir [/usr/local/lib/../lib64]
+    arg [-L/usr/lib/gcc/x86_64-redhat-linux/4.8.5] ==> dir [/usr/lib/gcc/x86_64-redhat-linux/4.8.5]
+    arg [-L/usr/lib/gcc/x86_64-redhat-linux/4.8.5/../../../../lib64] ==> dir [/usr/lib/gcc/x86_64-redhat-linux/4.8.5/../../../../lib64]
+    arg [-L/lib/../lib64] ==> dir [/lib/../lib64]
+    arg [-L/usr/lib/../lib64] ==> dir [/usr/lib/../lib64]
+    arg [-L/BIGDATA/nsccgz_pcheng_1/install/mpich/lib] ==> dir [/BIGDATA/nsccgz_pcheng_1/install/mpich/lib]
+    arg [-L/usr/local/lib] ==> dir [/usr/local/lib]
+    arg [-L/home/condor/install/zlib/lib] ==> dir [/home/condor/install/zlib/lib]
+    arg [-L/home/condor/install/zlib/lib] ==> dir [/home/condor/install/zlib/lib]
+    arg [-L/home/condor/install/ncurses-5.9/lib] ==> dir [/home/condor/install/ncurses-5.9/lib]
+    arg [-L/home/condor/install/bzip2-1.0.6/lib] ==> dir [/home/condor/install/bzip2-1.0.6/lib]
+    arg [-L/home/condor/install/xz-5.2.3/lib] ==> dir [/home/condor/install/xz-5.2.3/lib]
+    arg [-L.] ==> ignore
+    arg [-L/usr/lib/gcc/x86_64-redhat-linux/4.8.5/../../..] ==> dir [/usr/lib/gcc/x86_64-redhat-linux/4.8.5/../../..]
+    arg [CMakeFiles/cmTryCompileExec1614880979.dir/CMakeCXXCompilerABI.cpp.o] ==> ignore
+    arg [-lstdc++] ==> lib [stdc++]
+    arg [-lm] ==> lib [m]
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [-lgcc] ==> lib [gcc]
+    arg [-lc] ==> lib [c]
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [-lgcc] ==> lib [gcc]
+    arg [/usr/lib/gcc/x86_64-redhat-linux/4.8.5/crtend.o] ==> ignore
+    arg [/usr/lib/../lib64/crtn.o] ==> ignore
+  remove lib [gcc_s]
+  remove lib [gcc]
+  remove lib [gcc_s]
+  remove lib [gcc]
+  collapse library dir [/usr/lib/../lib64] ==> [/usr/lib64]
+  collapse library dir [/usr/local/lib/../lib64] ==> [/usr/local/lib64]
+  collapse library dir [/usr/lib/gcc/x86_64-redhat-linux/4.8.5] ==> [/usr/lib/gcc/x86_64-redhat-linux/4.8.5]
+  collapse library dir [/usr/lib/gcc/x86_64-redhat-linux/4.8.5/../../../../lib64] ==> [/usr/lib64]
+  collapse library dir [/lib/../lib64] ==> [/lib64]
+  collapse library dir [/usr/lib/../lib64] ==> [/usr/lib64]
+  collapse library dir [/BIGDATA/nsccgz_pcheng_1/install/mpich/lib] ==> [/BIGDATA/nsccgz_pcheng_1/install/mpich/lib]
+  collapse library dir [/usr/local/lib] ==> [/usr/local/lib]
+  collapse library dir [/home/condor/install/zlib/lib] ==> [/home/condor/install/zlib/lib]
+  collapse library dir [/home/condor/install/zlib/lib] ==> [/home/condor/install/zlib/lib]
+  collapse library dir [/home/condor/install/ncurses-5.9/lib] ==> [/home/condor/install/ncurses-5.9/lib]
+  collapse library dir [/home/condor/install/bzip2-1.0.6/lib] ==> [/home/condor/install/bzip2-1.0.6/lib]
+  collapse library dir [/home/condor/install/xz-5.2.3/lib] ==> [/home/condor/install/xz-5.2.3/lib]
+  collapse library dir [/usr/lib/gcc/x86_64-redhat-linux/4.8.5/../../..] ==> [/usr/lib]
+  implicit libs: [stdc++;m;c]
+  implicit dirs: [/usr/lib64;/usr/local/lib64;/usr/lib/gcc/x86_64-redhat-linux/4.8.5;/lib64;/BIGDATA/nsccgz_pcheng_1/install/mpich/lib;/usr/local/lib;/home/condor/install/zlib/lib;/home/condor/install/ncurses-5.9/lib;/home/condor/install/bzip2-1.0.6/lib;/home/condor/install/xz-5.2.3/lib;/usr/lib]
+  implicit fwks: []
+
+
+Determining if files pthread.h exist passed with the following output:
+Change Dir: /BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/gmake "cmTryCompileExec2565607736/fast"
+/usr/bin/gmake -f CMakeFiles/cmTryCompileExec2565607736.dir/build.make CMakeFiles/cmTryCompileExec2565607736.dir/build
+gmake[1]: Entering directory `/BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building C object CMakeFiles/cmTryCompileExec2565607736.dir/CheckIncludeFiles.c.o
+/usr/bin/cc   -Wall -Wno-deprecated-declarations -Wsign-compare    -o CMakeFiles/cmTryCompileExec2565607736.dir/CheckIncludeFiles.c.o   -c /BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles/CMakeTmp/CheckIncludeFiles.c
+Linking C executable cmTryCompileExec2565607736
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec2565607736.dir/link.txt --verbose=1
+/usr/bin/cc  -Wall -Wno-deprecated-declarations -Wsign-compare     CMakeFiles/cmTryCompileExec2565607736.dir/CheckIncludeFiles.c.o  -o cmTryCompileExec2565607736 -rdynamic 
+gmake[1]: Leaving directory `/BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles/CMakeTmp'
+
+
+Determining if the function pthread_create exists in the pthread passed with the following output:
+Change Dir: /BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/gmake "cmTryCompileExec205174737/fast"
+/usr/bin/gmake -f CMakeFiles/cmTryCompileExec205174737.dir/build.make CMakeFiles/cmTryCompileExec205174737.dir/build
+gmake[1]: Entering directory `/BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building C object CMakeFiles/cmTryCompileExec205174737.dir/CheckFunctionExists.c.o
+/usr/bin/cc   -Wall -Wno-deprecated-declarations -Wsign-compare -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTryCompileExec205174737.dir/CheckFunctionExists.c.o   -c /usr/share/cmake/Modules/CheckFunctionExists.c
+Linking C executable cmTryCompileExec205174737
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec205174737.dir/link.txt --verbose=1
+/usr/bin/cc  -Wall -Wno-deprecated-declarations -Wsign-compare -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTryCompileExec205174737.dir/CheckFunctionExists.c.o  -o cmTryCompileExec205174737 -rdynamic -lpthread 
+gmake[1]: Leaving directory `/BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles/CMakeTmp'
+
+
