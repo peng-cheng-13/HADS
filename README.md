@@ -40,7 +40,8 @@ conf.xml: configuration of the cluster
 Storage Research Group @ Tsinghua Universty
 
 Modification:
-RDMA implementation: Tianhe2-Glex
-Memory storage tier: Table
-SSD storage tier: Kyoto Cabinet
+- RDMA implementation: Tianhe2-Glex
+- Memory storage tier: Table
+- SSD storage tier: Kyoto Cabinet
+- Distributed block
 
