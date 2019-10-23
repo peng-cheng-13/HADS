@@ -49,15 +49,16 @@ void write_test(int size, int op_time)
 	memset(buf, 'a', BUFFER_SIZE);
 
 	MPI_Barrier ( MPI_COMM_WORLD );
-	
+	long offset = 0;
 	start = MPI_Wtime();
 	for(i = 0; i < op_time; i++)
 	{
+		offset = (long)i * (long)size;
 #ifdef TEST_RAW_IO
 		nrfsRawWrite(fs, path, buf, size, 0);
 #endif
 #ifdef TEST_NRFS_IO
-		nrfsWrite(fs, path, buf, size, i*size);
+		nrfsWrite(fs, path, buf, size, offset);
 #endif
 	}
 	end = MPI_Wtime();
@@ -73,7 +74,8 @@ void write_test(int size, int op_time)
 	else
 	{
 		time_cost = collect_time(*p);
-		num = (double)(size * op_time * numprocs) / time_cost;
+		num = (double)((double)size * (double)op_time * (double)numprocs) / (double)time_cost;
+		printf("num is %f\n", num);
 		rate = 1000000 * num / 1024 / 1024;
 		printf("Write Bandwidth = %f MB/s TimeCost = %d us\n", rate, (int)time_cost);
 	}
@@ -92,21 +94,27 @@ void read_test(int size, int op_time)
 	int time_cost;
 	char message[8];
 	int *p = (int*)message;
-
+        
 	memset(buf, '\0', BUFFER_SIZE);
 	memset(path, '\0', 255);
 	sprintf(path, "/file_%d", file_seq);
 
+        if (nrfsAccess(fs, path) != 1) {
+            printf("Path %s does not exist\n", path);
+            exit(-1);
+        }
+
 	MPI_Barrier ( MPI_COMM_WORLD );
-	
+	long offset = 0;
 	start = MPI_Wtime();
 	for(i = 0; i < op_time; i++)
 	{
+        	offset = (long)i * (long)size;
 #ifdef TEST_RAW_IO
-		nrfsRawRead(fs, path, buf, size, 0);
+		nrfsRawRead(fs, path, buf, size, offset);
 #endif
 #ifdef TEST_NRFS_IO
-		nrfsRead(fs, path, buf, size, 0);
+		nrfsRead(fs, path, buf, size, offset);
 #endif
 	}
 	end = MPI_Wtime();
@@ -122,7 +130,8 @@ void read_test(int size, int op_time)
 	else
 	{
 		time_cost = collect_time(*p);
-		num = (double)(size * op_time * numprocs) / time_cost;
+		num = (double)((double)size * (double)op_time * (double)numprocs) / (double)time_cost;
+                printf("num is %f\n", num);
 		rate = 1000000 * num / 1024 / 1024;
 		printf("Read Bandwidth = %f MB/s TimeCost = %d us\n", rate, (int)time_cost);
 	}
@@ -140,11 +149,14 @@ int main(int argc, char **argv)
 	char path[255];
 	if(argc < 2)
 	{
-		fprintf(stderr, "Usage: ./mpibw block_size num_write\n");
+		fprintf(stderr, "Usage: ./mpibw block_size num_write IsWriteOperation\n");
+                printf("Example: write test: ./mpibw 1024 10 1\n");
+                printf("Example: read test: ./mpibw 1024 10 0\n");
 		return -1;
 	}
 	int block_size = atoi(argv[1]);
 	int op_time = atoi(argv[2]);
+        int writeOp = atoi(argv[3]);
 	MPI_Init( &argc, &argv);
 	MPI_Comm_rank( MPI_COMM_WORLD, &myid );
 	MPI_Comm_size( MPI_COMM_WORLD, &numprocs );
@@ -156,12 +168,15 @@ int main(int argc, char **argv)
 
 	MPI_Barrier ( MPI_COMM_WORLD );
 
-	write_test(1024 * block_size, op_time);
-	read_test(1024 * block_size, op_time);
+        if (writeOp == 1) {
+ 	  write_test(1024 * block_size, op_time);
+        } else if (writeOp == 0) {
+  	  read_test(1024 * block_size, op_time);
+        }
 
 	MPI_Barrier ( MPI_COMM_WORLD );
 	sprintf(path, "/file_%d", myid);
-	nrfsDelete(fs, path);
+	//nrfsDelete(fs, path);
 	nrfsDisconnect(fs);
 
 	MPI_Finalize();

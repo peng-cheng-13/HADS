@@ -12,7 +12,7 @@ using namespace std;
 
 Configuration::Configuration() {
 	ServerCount = 0;
-	read_xml("../conf.xml", pt);
+	read_xml("/BIGDATA/nsccgz_pcheng_1/src/octopus/conf.xml", pt);
 	ptree child = pt.get_child("address");
 	for(BOOST_AUTO(pos,child.begin()); pos != child.end(); ++pos) 
     {  

@@ -80,6 +80,15 @@ int nrfsAccess(nrfs fs, const char* path);
 **/
 int nrfsGetAttribute(nrfs fs, nrfsFile file, FileMeta *attr);
 
+/*
+ * nrfsGetBlockList Get the BlockList of the file.
+ * @param fs The configured filesystem handle.
+ * @param file The full path to the file.
+ * @param blockCount number of blocks.
+ * @return Returns 0 on success, -1 on error.
+ */
+int nrfsGetBlockList(nrfs fs, nrfsFile file, FileMeta *attr, BlockInfo BlockList[]);
+
 /**
 *nrfsWrite - Write data into an open file.
 * @param fs The configured filesystem handle.

@@ -45,6 +45,7 @@ CMakeFiles/nrfsc.dir/src/fs/dmfs.cpp.o: ../include/filesystem.hpp
 CMakeFiles/nrfsc.dir/src/fs/dmfs.cpp.o: ../include/global.h
 CMakeFiles/nrfsc.dir/src/fs/dmfs.cpp.o: ../include/hashtable.hpp
 CMakeFiles/nrfsc.dir/src/fs/dmfs.cpp.o: ../include/lock.h
+CMakeFiles/nrfsc.dir/src/fs/dmfs.cpp.o: ../include/lrucache.hpp
 CMakeFiles/nrfsc.dir/src/fs/dmfs.cpp.o: ../include/mempool.hpp
 CMakeFiles/nrfsc.dir/src/fs/dmfs.cpp.o: ../include/storage.hpp
 CMakeFiles/nrfsc.dir/src/fs/dmfs.cpp.o: ../include/table.hpp
@@ -62,6 +63,7 @@ CMakeFiles/nrfsc.dir/src/fs/filesystem.cpp.o: ../include/filesystem.hpp
 CMakeFiles/nrfsc.dir/src/fs/filesystem.cpp.o: ../include/global.h
 CMakeFiles/nrfsc.dir/src/fs/filesystem.cpp.o: ../include/hashtable.hpp
 CMakeFiles/nrfsc.dir/src/fs/filesystem.cpp.o: ../include/lock.h
+CMakeFiles/nrfsc.dir/src/fs/filesystem.cpp.o: ../include/lrucache.hpp
 CMakeFiles/nrfsc.dir/src/fs/filesystem.cpp.o: ../include/mempool.hpp
 CMakeFiles/nrfsc.dir/src/fs/filesystem.cpp.o: ../include/storage.hpp
 CMakeFiles/nrfsc.dir/src/fs/filesystem.cpp.o: ../include/table.hpp
@@ -85,6 +87,7 @@ CMakeFiles/nrfsc.dir/src/fs/lock.cpp.o: ../include/filesystem.hpp
 CMakeFiles/nrfsc.dir/src/fs/lock.cpp.o: ../include/global.h
 CMakeFiles/nrfsc.dir/src/fs/lock.cpp.o: ../include/hashtable.hpp
 CMakeFiles/nrfsc.dir/src/fs/lock.cpp.o: ../include/lock.h
+CMakeFiles/nrfsc.dir/src/fs/lock.cpp.o: ../include/lrucache.hpp
 CMakeFiles/nrfsc.dir/src/fs/lock.cpp.o: ../include/mempool.hpp
 CMakeFiles/nrfsc.dir/src/fs/lock.cpp.o: ../include/storage.hpp
 CMakeFiles/nrfsc.dir/src/fs/lock.cpp.o: ../include/table.hpp
@@ -125,6 +128,7 @@ CMakeFiles/nrfsc.dir/src/net/RPCServer.cpp.o: ../include/filesystem.hpp
 CMakeFiles/nrfsc.dir/src/net/RPCServer.cpp.o: ../include/global.h
 CMakeFiles/nrfsc.dir/src/net/RPCServer.cpp.o: ../include/hashtable.hpp
 CMakeFiles/nrfsc.dir/src/net/RPCServer.cpp.o: ../include/lock.h
+CMakeFiles/nrfsc.dir/src/net/RPCServer.cpp.o: ../include/lrucache.hpp
 CMakeFiles/nrfsc.dir/src/net/RPCServer.cpp.o: ../include/mempool.hpp
 CMakeFiles/nrfsc.dir/src/net/RPCServer.cpp.o: ../include/storage.hpp
 CMakeFiles/nrfsc.dir/src/net/RPCServer.cpp.o: ../include/table.hpp

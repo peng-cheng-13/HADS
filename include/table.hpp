@@ -324,7 +324,7 @@ template<typename T> Table<T>::Table(char *buffer, uint64_t count)
             exit(EXIT_FAILURE);         /* Fail due to count alignment. */
         } else {
             bitmapItems = new Bitmap(count, buffer + count * sizeof(T)); /* Initialize item bitmap. */
-	    Debug::notifyInfo("Bitmap address is %ld", (long)(buffer + count * sizeof(T)));
+	    //Debug::notifyInfo("Bitmap address is %ld", (long)(buffer + count * sizeof(T)));
             items = (T *)(buffer); /* Initialize items array. */
             sizeBufferUsed = count / 8 + count * sizeof(T); /* Size of used bytes in buffer. */
             /*  

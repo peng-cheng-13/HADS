@@ -52,7 +52,6 @@ SET(CMAKE_MAKEFILE_PRODUCTS
 SET(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/dmfs.dir/DependInfo.cmake"
   "CMakeFiles/fusenrfs.dir/DependInfo.cmake"
-  "CMakeFiles/jninrfs.dir/DependInfo.cmake"
   "CMakeFiles/locktest.dir/DependInfo.cmake"
   "CMakeFiles/mpibw.dir/DependInfo.cmake"
   "CMakeFiles/mpitest.dir/DependInfo.cmake"

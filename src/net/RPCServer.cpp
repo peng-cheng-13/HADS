@@ -20,7 +20,7 @@ RPCServer::RPCServer(int _cqSize, int argc, char** argv) :cqSize(_cqSize) {
 	mm = 0;
 	UnlockWait = false;
 	conf = new Configuration();
-	mem = new MemoryManager(mm, conf->getServerCount(), 1536);
+	mem = new MemoryManager(mm, conf->getServerCount(), RDMA_DATASIZE);
 	mm = mem->getDmfsBaseAddress();
 	Debug::notifyInfo("DmfsBaseAddress = %lx, DmfsTotalSize = %ld",
 		mem->getDmfsBaseAddress(), (long) mem->getDmfsTotalSize());
@@ -236,10 +236,12 @@ uint64_t RPCServer::ContractReceiveBuffer(GeneralSendBuffer *send, GeneralReceiv
 		case MESSAGE_GETATTR: {
 			GetAttributeReceiveBuffer *bufferRecv = 
 			(GetAttributeReceiveBuffer *)recv;
-			if (bufferRecv->attribute.count >= 0 && bufferRecv->attribute.count < MAX_FILE_EXTENT_COUNT)
-				length = (MAX_FILE_EXTENT_COUNT - bufferRecv->attribute.count) * sizeof(FileMetaTuple);
+			
+ 			if (bufferRecv->attribute.count >= 0 && bufferRecv->attribute.count < MAX_FILE_EXTENT_COUNT)
+				length = (MAX_FILE_EXTENT_COUNT - bufferRecv->attribute.count) * sizeof(BlockInfo);
 			else 
-				length = sizeof(FileMetaTuple) * MAX_FILE_EXTENT_COUNT;
+				length = sizeof(BlockInfo) * MAX_FILE_EXTENT_COUNT;
+			
 			break;
 		}
 		case MESSAGE_READDIR: {

@@ -2,6 +2,7 @@
 #define COMMON_HEADER
 #include <stdint.h>
 #include <time.h>
+#include <vector>
 
 typedef int nrfs;
 typedef char* nrfsFile;
@@ -35,7 +36,7 @@ struct nrfsfileattr
 #define MAX_PATH_LENGTH 255             /* Max length of path. */
 
 /** Definitions. **/
-#define MAX_FILE_EXTENT_COUNT 128        /* Max extent count in meta of a file. */
+#define MAX_FILE_EXTENT_COUNT 512        /* Max extent count in meta of a file. */
 #define BLOCK_SIZE (16 * 1024 * 1024)    /* Current block size in bytes. */
 #define MAX_FILE_NAME_LENGTH 50         /* Max file name length. */
 #define MAX_DIRECTORY_COUNT 60         /* Max directory count. */
@@ -59,28 +60,30 @@ typedef struct
     uint32_t BlockID;
 } FileBlockTuple;
 
-/*
+
 typedef struct {
     uint32_t BlockID;
+    uint16_t nodeID;
+    uint16_t tier;
     uint32_t indexCache;
-    uint32_t indexMmem;
-    bool isDirty;
+    uint32_t indexMem;
     uint64_t StorageAddress;
+    bool isDirty;
     bool present; //whether a block is presented in RDMA region;
-}BlockInfo;
- * */
+} BlockInfo;
+
 
 typedef struct                          /* File meta structure. */
 {
+    char name[MAX_FILE_NAME_LENGTH];
     time_t timeLastModified;        /* Last modified time. */
     uint64_t count;                 /* Count of extents. (not required and might have consistency problem with size) */
     uint64_t size;                  /* Size of extents. */
     bool isNewFile;                 /* Whether the file is newly created or dirty */
     uint32_t tier;                  /* The storage tier the file resides*/
-    FileMetaTuple tuple[MAX_FILE_EXTENT_COUNT];  /* Blocks in RDMA region */
-    FileBlockTuple StorageTuple[MAX_FILE_EXTENT_COUNT]; /* Blocks in memory pool or SSD tier */
-    //List<BlcokInfo>;
-    //char* name;
+    bool hasNextChunk;              /* Flag for large files since each FileMeta object contains MAX_FILE_EXTENT_COUNT blocks*/
+    uint64_t indexOfNextChunk;      /* Index of Next chunk*/
+    BlockInfo BlockList[MAX_FILE_EXTENT_COUNT];  /*Block metadata*/
 } FileMeta;
 
 typedef struct {

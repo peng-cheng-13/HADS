@@ -11,6 +11,8 @@ stdint.h
 -
 time.h
 -
+vector
+-
 
 ../include/nrfs.h
 iostream
@@ -50,5 +52,7 @@ stdio.h
 string.h
 -
 stdlib.h
+-
+algorithm
 -
 

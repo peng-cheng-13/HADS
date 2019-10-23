@@ -63,19 +63,19 @@ Storage::Storage(char *buffer, char* bufferBlock, char *extraBlock, uint64_t cou
         exit(EXIT_FAILURE);             /* Exit due to parameter error. */
     } else {
         hashtable = new HashTable(buffer, countDirectory + countFile); /* Initialize hash table. */
-        Debug::notifyInfo("sizeof Hash Table = %d MB", hashtable->sizeBufferUsed / 1024 / 1024);
+        Debug::notifyInfo("sizeof Hash Table = %d bytes", hashtable->sizeBufferUsed);
 	Debug::notifyInfo("HashTable address : %ld",(long) buffer);
 
         tableFileMeta = new Table<FileMeta>(buffer + hashtable->sizeBufferUsed, countFile); /* Initialize file meta table. */
-        Debug::notifyInfo("sizeof File Meta Size = %d MB", tableFileMeta->sizeBufferUsed / 1024 / 1024);
+        Debug::notifyInfo("sizeof File Meta Size = %d bytes", tableFileMeta->sizeBufferUsed);
 	Debug::notifyInfo("FileMeta address : %ld",(long) (buffer + hashtable->sizeBufferUsed));
 
         tableDirectoryMeta = new Table<DirectoryMeta>(buffer + hashtable->sizeBufferUsed + tableFileMeta->sizeBufferUsed, countDirectory); /* Initialize directory meta table. */
-        Debug::notifyInfo("sizeof Directory Meta Size = %d MB", tableDirectoryMeta->sizeBufferUsed / 1024 / 1024);
+        Debug::notifyInfo("sizeof Directory Meta Size = %d bytes", tableDirectoryMeta->sizeBufferUsed);
 	Debug::notifyInfo("Directory Meta address : %ld", (long)(buffer + hashtable->sizeBufferUsed + tableFileMeta->sizeBufferUsed));
 
-
-        tableBlock = new Table<Block>(bufferBlock, countBlock / 4); /* Initialize block table. */
+	uint64_t RdmaBlockCount = RDMA_DATASIZE * 1024 * 1024 / BLOCK_SIZE; /* 1536 is set in mempool.cpp*/
+        tableBlock = new Table<Block>(bufferBlock, RdmaBlockCount); /* Initialize block table. */
         Debug::notifyInfo("Debug-Storage.cpp: tableBlock done, address : %ld", (long)bufferBlock);
 
 	extraTableBlock = new Table<Block>(extraBlock, countBlock);
@@ -86,8 +86,13 @@ Storage::Storage(char *buffer, char* bufferBlock, char *extraBlock, uint64_t cou
         sizeBufferUsed = hashtable->sizeBufferUsed + tableFileMeta->sizeBufferUsed + tableDirectoryMeta->sizeBufferUsed + tableBlock->sizeBufferUsed; /* Size of used bytes in buffer. */
         printf("Debug-Storage.cpp: size done\n");
 
-	db.open(DB_PATH, kyotocabinet::DirDB::OCREATE | kyotocabinet::DirDB::OWRITER);
-	printf("kyotocabinet Done\n");
+	if (!db.open(DB_PATH, kyotocabinet::DirDB::OWRITER | kyotocabinet::DirDB::OCREATE | kyotocabinet::DirDB::OTRUNCATE)) {
+          printf("DB open failed\n");
+          std::cerr << "open error: " << db.error().name() << std::endl;
+          exit(-1);
+        } else {
+   	  printf("kyotocabinet Done\n");
+        }
     }
 }
 

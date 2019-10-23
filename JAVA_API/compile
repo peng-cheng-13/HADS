@@ -1,0 +1,1 @@
+g++ -std=c++11 JavaApiImpl.cpp -I/usr/software/java/jdk1.8.0_121/include -I/usr/software/java/jdk1.8.0_121/include/linux -I/BIGDATA/nsccgz_pcheng_1/src/octopus/include -shared -fPIC -L/BIGDATA/nsccgz_pcheng_1/src/octopus/build -lnrfsc -o libjninrfs.so

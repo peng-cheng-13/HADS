@@ -990,6 +990,7 @@ bool RdmaSocket::RdmaRead(uint16_t NodeID, uint64_t SourceBuffer, uint64_t DesBu
         default:
            printf("Debug-RdmaSocket.cpp: RdmaRead Other error\n");
     }
+    //PollCompletionGlex();
     if (tmpret == GLEX_SUCCESS)
         return true;
     else
@@ -1144,14 +1145,9 @@ bool RdmaSocket::InboundHamal(int TaskID, uint64_t bufferSend, uint16_t NodeID, 
     uint64_t diff;
     while (TotalSizeSend < size) {
         SendSize = (size - TotalSizeSend) >= SendPoolSize ? SendPoolSize : (size - TotalSizeSend);
-        // _RdmaBatchRead(NodeID, 
-        //                SendPoolAddr, 
-        //                bufferReceive + TotalSizeSend, 
-        //                SendSize, 
-        //                1);
         gettimeofday(&start, NULL);
         RdmaRead(NodeID, SendPoolAddr, bufferReceive + TotalSizeSend, SendSize, TaskID + 1, true);
-        PollCompletion(NodeID, 1, &wc);
+        PollCompletionGlex();
         memcpy((void *)(bufferSend + TotalSizeSend), (void *)SendPoolAddr, SendSize);
         gettimeofday(&end, NULL);
         diff = 1000000 * (end.tv_sec - start.tv_sec) + end.tv_usec - start.tv_usec;
@@ -1187,7 +1183,9 @@ bool RdmaSocket::RdmaWrite(uint16_t NodeID, uint64_t SourceBuffer, uint64_t DesB
         rdma_req.rmt_mh.v       = peers[NodeID]->rmt_mh.v;
         rdma_req.rmt_offset     = DesBuffer;
         Debug::debugItem("Debug-RdmaSocket.cpp: RdmaWrite ready");
-        while ((tmpret = glex_rdma(ep, &rdma_req, &bad_rdma_req)) == GLEX_BUSY) {
+        tmpret = glex_rdma(ep, &rdma_req, &bad_rdma_req);
+        while (tmpret != GLEX_SUCCESS) {
+          tmpret = glex_rdma(ep, &rdma_req, &bad_rdma_req);
         }
         switch (tmpret) {
             case GLEX_SUCCESS :
@@ -1210,43 +1208,12 @@ bool RdmaSocket::RdmaWrite(uint16_t NodeID, uint64_t SourceBuffer, uint64_t DesB
     } else {
       Debug::notifyError("Send with RDMA_WRITE(WITH_IMM) faild");
     }
-    /*
-    struct ibv_sge sg;
-    struct ibv_send_wr wr;
-    struct ibv_send_wr *wrBad;
-    PeerSockData *peer = peers[NodeID];
-    memset(&sg, 0, sizeof(sg));
-    sg.addr   = (uintptr_t)SourceBuffer;
-    sg.length = BufferSize;
-    sg.lkey   = mr->lkey;
-     
-    memset(&wr, 0, sizeof(wr));
-    wr.wr_id      = 0;
-    wr.sg_list    = &sg;
-    wr.num_sge    = 1;
-    if((int32_t)imm == -1) {
-        wr.opcode     = IBV_WR_RDMA_WRITE;
-    } else {
-        wr.opcode     = IBV_WR_RDMA_WRITE_WITH_IMM;
-        wr.imm_data   = imm;
-    }
-    wr.send_flags = IBV_SEND_SIGNALED;
-    wr.wr.rdma.remote_addr = DesBuffer + peer->RegisteredMemory;
-    Debug::debugItem("Post RDMA_WRITE with remote address = %lx", wr.wr.rdma.remote_addr);
-    wr.wr.rdma.rkey        = peer->rkey;
-    if (ibv_post_send(peer->qp[TaskID], &wr, &wrBad)) {
-        Debug::notifyError("Send with RDMA_WRITE(WITH_IMM) failed.");
-        printf("%s\n", strerror(errno));
-        return false;
-    }
-	return true;
-    */
 }
 
 bool RdmaSocket::RemoteWrite(uint64_t bufferSend, uint16_t NodeID, uint64_t bufferReceive, uint64_t size) {
     int shipSize;
     TransferTask tasks[4];
-    if (size < 4 * 1024 * 1024) {
+    if (size < 32 * 1024 * 1024) {
         /* Small size write, no need to use multithread to transfer. */
         OutboundHamal(0, bufferSend, NodeID, bufferReceive, size);
         return true;
@@ -1280,36 +1247,29 @@ bool RdmaSocket::OutboundHamal(int TaskID, uint64_t bufferSend, uint16_t NodeID,
         SendSize = (size - TotalSizeSend) >= SendPoolSize ? SendPoolSize : (size - TotalSizeSend);
         gettimeofday(&start,NULL);
         memcpy((void *)SendPoolAddr, (void *)(bufferSend + TotalSizeSend), SendSize);
-        // _RdmaBatchWrite(NodeID, 
-        //                SendPoolAddr, 
-        //                bufferReceive + TotalSizeSend, 
-        //                SendSize, 
-        //                (uint32_t)-1,
-        //                1);
+        Debug::debugItem("RdmaWrite in OutboundHamal");
+        //RdmaWrite(NodeID, bufferSend + TotalSizeSend, bufferReceive + TotalSizeSend, SendSize, -2, TaskID + 1);
         RdmaWrite(NodeID, SendPoolAddr, bufferReceive + TotalSizeSend, SendSize, -2, TaskID + 1);
-        PollCompletion(NodeID, 1, &wc);
-        // if (SendSize > 32 * 1024) {
-        //     /* Wait Until write finish, May help. */
-        //     RdmaRead(NodeID, SendPoolAddr, bufferReceive + TotalSizeSend, 1);
-        //     PollCompletion(NodeID, 1, &wc);
-        // }
+        PollCompletionGlex();
+
         gettimeofday(&end,NULL);
         diff = 1000000 * (end.tv_sec - start.tv_sec) + end.tv_usec - start.tv_usec;
         WriteSize[TaskID] += SendSize;
         WriteTimeCost[TaskID] += diff;
         /* RdmaWrite Testing. */
         if (WriteTest) {
+            Debug::debugItem("WriteTest once");
             gettimeofday(&start,NULL);
             for (int i = 0; i < 10; i ++) {
                 RdmaWrite(NodeID, SendPoolAddr, bufferReceive, 1024 * 1024, -2, TaskID + 1);
-                PollCompletion(NodeID, 1, &wc);
+                PollCompletionGlex();
             }
             gettimeofday(&end,NULL);
             diff = 1000000 * (end.tv_sec - start.tv_sec) + end.tv_usec - start.tv_usec;
             printf("diff = %d, size = 10MB.\n", (int)diff);
             WriteTest = false;
         }
-        Debug::debugItem("Source Addr = %lx, Des Addr = %lx, Size = %d", SendPoolAddr, bufferReceive + TotalSizeSend, SendSize);
+        Debug::debugItem("Source Addr = %lx, Des Addr = %lx, Size = %ld", SendPoolAddr, bufferReceive + TotalSizeSend, (long) SendSize);
         TotalSizeSend += SendSize;
     }
     __sync_fetch_and_add( &TransferSignal, 1 );
@@ -1416,49 +1376,6 @@ bool RdmaSocket::_RdmaBatchWrite(uint16_t NodeID, uint64_t SourceBuffer, uint64_
         return true;
     else
         return false;
-    /*
-    struct ibv_sge sgl[MAX_POST_LIST];
-    struct ibv_send_wr send_wr[MAX_POST_LIST];
-    struct ibv_send_wr *wrBad;
-    PeerSockData *peer = peers[NodeID];
-    struct ibv_wc wc;
-    int w_i;
-    //printf("NodeID = %d, qp_num = %lx, cq = %lx, rkey = %x\n", NodeID, peer->qp->qp_num, peer->cq, peer->rkey);
-    for (w_i = 0; w_i < BatchSize; w_i++) {
-        if ((peer->counter & SIGNAL_BATCH) == 0 && peer->counter > 0 && !isServer) {
-            PollCompletion(NodeID, 1, &wc);
-        }
-        sgl[w_i].addr   = (uintptr_t)SourceBuffer + w_i * 4096;
-        sgl[w_i].length = BufferSize;
-        sgl[w_i].lkey   = mr->lkey;
-        send_wr[w_i].sg_list    = &sgl[w_i];
-        send_wr[w_i].num_sge    = 1;
-        send_wr[w_i].next       = (w_i == BatchSize - 1) ? NULL : &send_wr[w_i + 1];
-        if ((int32_t)imm == 0) {
-             send_wr[w_i].opcode = IBV_WR_RDMA_WRITE;
-         } else {
-             send_wr[w_i].opcode = IBV_WR_RDMA_WRITE_WITH_IMM;
-             send_wr[w_i].imm_data = imm;
-         }
-        send_wr[w_i].wr_id      = 0;
-        
-        send_wr[w_i].send_flags = 0;
-        send_wr[w_i].send_flags = (peer->counter & SIGNAL_BATCH) == 0 ? IBV_SEND_SIGNALED : 0;
-        
-        //send_wr[w_i].send_flags |= IBV_SEND_INLINE;
-        send_wr[w_i].wr.rdma.remote_addr = DesBuffer + peer->RegisteredMemory + w_i * 4096;
-        Debug::debugItem("remote address = %lx, Counter = %d, imm = %lx", send_wr[w_i].wr.rdma.remote_addr, peer->counter, imm);
-        send_wr[w_i].wr.rdma.rkey        = peer->rkey;
-        peer->counter += 1;
-    }
-
-    if (ibv_post_send(peer->qp[0], &send_wr[0], &wrBad)) {
-        Debug::notifyError("Send with RDMA_WRITE(WITH_IMM) failed.");
-        printf("%s\n", strerror(errno));
-        return false;
-    }
-    return true;
-    */
 }
 
 bool RdmaSocket::RdmaFetchAndAdd(uint16_t NodeID, uint64_t SourceBuffer, uint64_t DesBuffer, uint64_t Add) {
@@ -1532,7 +1449,7 @@ int RdmaSocket::PollCompletion(uint16_t NodeID, int PollNumber, struct ibv_wc *w
     int count = 0;
     glex_event_t *event;
     Debug::debugItem("Debug-RdmaSocket.cpp: PollCompletion ready");
-    while (glex_probe_next_event(ep, &event) == GLEX_NO_EVENT){
+    while (glex_probe_first_event(ep, -1, &event) != GLEX_SUCCESS){
     }
     glex_discard_probed_event(ep);
     Debug::debugItem("Debug-RdmaSocket.cpp: PollCompletion Done");

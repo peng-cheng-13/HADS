@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <algorithm>
 #define PATH_LEN 500
 #define CMD_LEN 20
 static char path[PATH_LEN] = "/";
@@ -154,6 +155,27 @@ void do_ls()
 {
 	nrfsfilelist list;
 	uint32_t i;
+	if (workPath[0] != 0) {
+	    printf("List file attribute\n");
+	    char temp[PATH_LEN] = {0};
+	    strcpy(temp, path);
+   	    if(strcmp(path, "/") != 0)
+		strcat(temp, "/");
+	    strcat(temp, workPath);
+ 	    nrfsFile file = nrfsOpenFile(fs, temp, 0);
+	    if (file == NULL) {
+		return;
+	    }
+	    FileMeta attr;
+	    BlockInfo BlockList[10];
+	    nrfsGetBlockList(fs, file, &attr, BlockList);
+	    printf("File: %s, size is %ld bytes, block.count is %d\n", temp, (long)attr.size, attr.count);
+	    for (int j = 0; j < min((int)attr.count, 10); j++) {
+	        //BlockInfo tmpBlock = BlockList[i];
+		printf("\tBlockID: %d, NodeID: %d, tier: %d\n", BlockList[i].BlockID, BlockList[i].nodeID, BlockList[i].tier);
+	    }
+	    return;
+	}
 	nrfsListDirectory(fs, path, &list);
 	for(i = 0; i < list.count; i++)
 	{
@@ -203,18 +225,24 @@ void do_cat()
 	char temp[PATH_LEN] = {0};
 	char value[1000];
 	int i;
-	FileMeta attr;
+	FileMeta *attr = (FileMeta *)malloc(sizeof(FileMeta));
 	strcpy(temp, path);
-	if(strcmp(path, "/") != 0)
-		strcat(temp, "/");
+	if(strcmp(path, "/") != 0) {
+	    strcat(temp, "/");
+        }
 	strcat(temp, workPath);
 	nrfsFile file = nrfsOpenFile(fs, temp, 0);
-	nrfsGetAttribute(fs, file, &attr);
-	if(attr.size == 0)
-		return;
-	nrfsRead(fs, file, value, attr.size, 0);
+        if (file == NULL) {
+	    printf("File does not exist\n");
+	    return;
+        }
+	nrfsGetAttribute(fs, file, attr);
+	if(attr->size == 0) {
+	    return;
+	}
+	nrfsRead(fs, file, value, attr->size, 0);
 	nrfsCloseFile(fs, file);
-	for(i = 0; i < (int)attr.size; i++)
+	for(i = 0; i < (int)attr->size; i++)
 		printf("%c", value[i]);
 	printf("\n");
 }

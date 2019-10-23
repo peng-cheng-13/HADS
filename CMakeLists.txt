@@ -45,7 +45,7 @@ set(CNET_SRC ${PROJECT_SOURCE_DIR}/src/net)
 set(CLIB_SRC ${PROJECT_SOURCE_DIR}/src/client)
 file(GLOB_RECURSE NRFS_LIB_SRC ${CNET_SRC}/*.cpp ${CLIB_SRC}/*.cpp ${TOOLS_SRC}/*.cpp ${FS_SRC}/*.cpp)
 add_library(nrfsc SHARED ${NRFS_LIB_SRC})
-add_library(jninrfs SHARED ${NRFS_LIB_SRC} ${CLIB_SRC}/JavaApiImpl.cpp)
+#add_library(jninrfs SHARED ${NRFS_LIB_SRC} ${CLIB_SRC}/JavaApiImpl.cpp)
 # Build client test
 find_package(MPI REQUIRED)
 set (CMAKE_C_COMPILER ${MPI_C_COMPILER})

@@ -327,22 +327,31 @@ nrfsFile nrfsOpenFile(nrfs fs, const char* _path, int flags)
 	char *file;
 	int result;
 	result = nrfsAccess(fs, _path);
-	if((flags & O_CREAT) && result)	/* Access falied and no creation */
-	{
+        if (result == 1) {
+	    file = (char*)malloc(MAX_FILE_NAME_LENGTH);
+	    correct(_path, file);
+            return (nrfsFile)file;
+	} else if (result ==  0) {
+	    printf("Debug-nrfs.cpp: It's a dirtory, failed to open a file\n");
+	    return NULL;
+	} else {
+	    if((flags & O_CREAT)) {
 		printf("Debug-nrfs.cpp: File does not exist, create a new file\n");
 		result = nrfsMknod(fs, _path);
-	} else {
-		printf("Debug-nrfs.cpp: File exists\n");
+                if (result == 0) {
+	  	    file = (char*)malloc(MAX_FILE_NAME_LENGTH);
+   	            correct(_path, file);
+                    printf("Debug-nrfs.cpp: File %s created\n", file);
+                    return (nrfsFile)file;
+                } else {
+                  printf("Debug-nrfs.cpp: File create failed\n");
+                }
+	    } else {
+		printf("Debug-nrfs.cpp: File does not exist\n");
+	    }
 	}
 
-	if(result == 0)
-	{
-		file = (char*)malloc(MAX_FILE_NAME_LENGTH);
-		correct(_path, file);
-		return (nrfsFile)file;
-	}
-	else
-		return NULL;
+	return NULL;
 }
 
 
@@ -365,10 +374,10 @@ int nrfsMknod(nrfs fs, const char* _path)
 	uint16_t node_id  = get_node_id_by_path(sendBuffer.path);
 	sendMessage(node_id, &sendBuffer, sizeof(GeneralSendBuffer), 
 		&receiveBuffer, sizeof(GeneralReceiveBuffer));
-	if(receiveBuffer.result == false) {
-		result = 1;
-	} else {
+	if(receiveBuffer.result == true) {
 		result = 0;
+	} else {
+		result = 1;
 	}
 	return result;
 }
@@ -415,21 +424,54 @@ int nrfsGetAttribute(nrfs fs, nrfsFile _file, FileMeta *attr)
 
     uint16_t node_id = get_node_id_by_path(bufferGeneralSend.path);
 
-    GetAttributeReceiveBuffer bufferGetAttributeReceive;
+    GetAttributeReceiveBuffer *bufferGetAttributeReceive = (GetAttributeReceiveBuffer *)malloc(sizeof(GetAttributeReceiveBuffer));
     
     sendMessage(node_id, &bufferGeneralSend, sizeof(GeneralSendBuffer), 
-					&bufferGetAttributeReceive, sizeof(GetAttributeReceiveBuffer));
-	
-	*attr = bufferGetAttributeReceive.attribute;
-	Debug::debugItem("nrfsGetAttribute, META.size = %d", attr->size);
-	if(bufferGetAttributeReceive.result) {
-	    if(bufferGetAttributeReceive.message == MESSAGE_NOTDIR) {
-		return 1;
-	    }
-	    return 0;
-	} else {
-	    return -1;
+					bufferGetAttributeReceive, sizeof(GetAttributeReceiveBuffer));
+    Debug::debugItem("\tMETA.size = %d, block.count is %d ", bufferGetAttributeReceive->attribute.size, bufferGetAttributeReceive->attribute.count);
+    memcpy((void *)attr, (void *)&bufferGetAttributeReceive->attribute, sizeof(bufferGetAttributeReceive->attribute));
+    if(bufferGetAttributeReceive->result) {
+        if(bufferGetAttributeReceive->message == MESSAGE_NOTDIR) {
+  	    return 1;
 	}
+	return 0;
+    } else {
+        return -1;
+    }
+}
+
+/*Get the block info of this file*/
+int nrfsGetBlockList(nrfs fs, nrfsFile file, FileMeta *attr, BlockInfo BlockList[]) {
+    Debug::debugTitle("nrfsGetBlockList");
+    Debug::debugItem("nrfsGetBlockList %s", file);
+
+    GeneralSendBuffer bufferGeneralSend;
+    bufferGeneralSend.message = MESSAGE_GETATTR;
+
+    correct((char*)file, bufferGeneralSend.path);
+
+    uint16_t node_id = get_node_id_by_path(bufferGeneralSend.path);
+
+    GetAttributeReceiveBuffer *bufferGetAttributeReceive = (GetAttributeReceiveBuffer *)malloc(sizeof(GetAttributeReceiveBuffer));
+
+    sendMessage(node_id, &bufferGeneralSend, sizeof(GeneralSendBuffer),
+                                        bufferGetAttributeReceive, sizeof(GetAttributeReceiveBuffer));
+    Debug::debugItem("\tMETA.size = %ld, block.count is %d ", bufferGetAttributeReceive->attribute.size, bufferGetAttributeReceive->attribute.count);
+    memcpy((void *)attr, (void *)&bufferGetAttributeReceive->attribute, sizeof(bufferGetAttributeReceive->attribute));
+    //memcpy((void *)BlockList, (void *)bufferGetAttributeReceive->BlockList, bufferGetAttributeReceive->attribute.count * sizeof(BlockInfo));
+    for (int i = 0; i < bufferGetAttributeReceive->attribute.count; i++) {
+	BlockList[i] = bufferGetAttributeReceive->BlockList[i];
+    }
+    //BlockList = bufferGetAttributeReceive->BlockList;
+    Debug::debugItem("BlockID %d, node %d, tier %d", bufferGetAttributeReceive->BlockList[0].BlockID, bufferGetAttributeReceive->BlockList[0].nodeID, bufferGetAttributeReceive->BlockList[0].tier);
+    if(bufferGetAttributeReceive->result) {
+        if(bufferGetAttributeReceive->message == MESSAGE_NOTDIR) {
+            return 1;
+        }
+        return 0;
+    } else {
+        return -1;
+    }
 }
 
 /**
@@ -443,17 +485,18 @@ int nrfsAccess(nrfs fs, const char* _path)
 	Debug::debugTitle("nrfsAccess");
 	Debug::debugItem("nrfsAccess: %s", _path);
 	GeneralSendBuffer sendBuffer;
-	GeneralReceiveBuffer receiveBuffer;
-	
+	GeneralReceiveBuffer *receiveBuffer = (GeneralReceiveBuffer *)malloc(sizeof(GeneralReceiveBuffer));
+	Debug::debugItem("nrfsAccess size of receiveBuffer %d", sizeof(GeneralReceiveBuffer));
 	sendBuffer.message = MESSAGE_ACCESS;
 
 	correct(_path, sendBuffer.path);
 	uint16_t node_id = get_node_id_by_path(sendBuffer.path);
 	
 	sendMessage(node_id, &sendBuffer, sizeof(GeneralSendBuffer), 
-					&receiveBuffer, sizeof(GeneralReceiveBuffer));
-	if(receiveBuffer.result) {
-	    if (receiveBuffer.message == MESSAGE_NOTDIR) {
+					receiveBuffer, sizeof(GeneralReceiveBuffer));
+        Debug::debugItem("nrfsAccess Clinet side");
+	if(receiveBuffer->result) {
+	    if (receiveBuffer->message == MESSAGE_NOTDIR) {
 		return 1;
 	    }
 	    return 0;
@@ -474,41 +517,46 @@ int nrfsAccess(nrfs fs, const char* _path)
 int nrfsWrite(nrfs fs, nrfsFile _file, const void* buffer, uint64_t size, uint64_t offset)
 {
 	Debug::debugTitle("nrfsWrite");
-	Debug::debugItem("Write size: %lx, offset: %lx", size, offset);
-	
+	Debug::debugItem("Write file %s, size: %ld, offset: %ld", _file, (long) size, (long) offset);
+	if ((size < 0) || (offset < 0)) {
+	    Debug::notifyError("Wrong size or offset! Size : %ld, Offset: %ld", (long) size, (long) offset);
+            return -1;
+        }
 	gettimeofday(&start1, NULL);
 
 	file_pos_info fpi;
 	uint64_t length_copied = 0;
-    ExtentWriteSendBuffer bufferExtentWriteSend; /* Send buffer. */
-    ExtentWriteReceiveBuffer bufferExtentWriteReceive;
+        ExtentWriteSendBuffer *bufferExtentWriteSend = (ExtentWriteSendBuffer *)malloc(sizeof(ExtentWriteSendBuffer)); /* Send buffer. */
+        ExtentWriteReceiveBuffer *bufferExtentWriteReceive = (ExtentWriteReceiveBuffer *)malloc(sizeof(ExtentWriteReceiveBuffer));
 
-    bufferExtentWriteSend.message = MESSAGE_EXTENTWRITE; /* Assign message type. */
+        bufferExtentWriteSend->message = MESSAGE_EXTENTWRITE; /* Assign message type. */
     
-    correct((char*)_file, bufferExtentWriteSend.path);
-	uint16_t node_id = get_node_id_by_path(bufferExtentWriteSend.path);
-    
-    bufferExtentWriteSend.size = size; /* Assign size. */
-    bufferExtentWriteSend.offset = offset; /* Assign offset. */
-	
+        correct((char*)_file, bufferExtentWriteSend->path);
+        Debug::debugItem("Write debug, path is %s", bufferExtentWriteSend->path);
+	uint16_t node_id = get_node_id_by_path(bufferExtentWriteSend->path);
+
+        bufferExtentWriteSend->size = size; /* Assign size. */
+        bufferExtentWriteSend->offset = offset; /* Assign offset. */
+
 	gettimeofday(&end1, NULL);
 	diff = 1000000 * (end1.tv_sec - start1.tv_sec) + end1.tv_usec - start1.tv_usec;
 	WriteTime1 += diff;
 
 	gettimeofday(&start1, NULL);
-	sendMessage(node_id, &bufferExtentWriteSend, sizeof(ExtentWriteSendBuffer), 
-					&bufferExtentWriteReceive, sizeof(ExtentWriteReceiveBuffer));
+	sendMessage(node_id, bufferExtentWriteSend, sizeof(ExtentWriteSendBuffer), 
+					bufferExtentWriteReceive, sizeof(ExtentWriteReceiveBuffer));
+
 	gettimeofday(&end1, NULL);
 	diff = 1000000 * (end1.tv_sec - start1.tv_sec) + end1.tv_usec - start1.tv_usec;
 	WriteTime2 += diff;
 
-	if(bufferExtentWriteReceive.result == true) {
-		fpi = bufferExtentWriteReceive.fpi;
+	if(bufferExtentWriteReceive->result == true) {
+		fpi = bufferExtentWriteReceive->fpi;
 		gettimeofday(&start1, NULL);
 		for(int i = 0; i < (int)fpi.len; i++)
 		{
-			Debug::debugItem("fpi: i = %d, node_id = %d,offset = %x, size = %d", 
-				i, fpi.tuple[i].node_id, fpi.tuple[i].offset, fpi.tuple[i].size);
+			Debug::debugItem("fpi: i = %d, node_id = %d,offset = %ld, size = %ld", 
+				i, fpi.tuple[i].node_id, (long) fpi.tuple[i].offset, (long) fpi.tuple[i].size);
 			if(/*fpi.node_id[i] == (uint16_t)fs*/0)
 			{
 				// memcpy((void*)(mem.get_storage_addr() + fpi.offset[i]),
@@ -551,7 +599,7 @@ int nrfsWrite(nrfs fs, nrfsFile _file, const void* buffer, uint64_t size, uint64
 		if(bufferGeneralReceive.result == true)
 			return (int)length_copied;
 		else
-			return 1;
+			return -1;
 	} else {
 		return -1;
 	}
@@ -744,10 +792,10 @@ int nrfsDelete(nrfs fs, const char* _path)
 		result = 1;
 	} else if (bufferReceive->attribute.count != MAX_FILE_EXTENT_COUNT) {
 		for (uint64_t i = 0; i < bufferReceive->attribute.count; i++) {
-			if (((uint16_t)(bufferReceive->attribute.tuple[i].hashNode) != node_id) && (bufferReceive->attribute.tuple[i].hashNode != 0)) {
-				nrfsFreeBlock((uint16_t)(bufferReceive->attribute.tuple[i].hashNode),
-						bufferReceive->attribute.tuple[i].indexExtentStartBlock, 
-						bufferReceive->attribute.tuple[i].countExtentBlock);
+			if (((uint16_t)(bufferReceive->attribute.BlockList[i].nodeID) != node_id) && (bufferReceive->attribute.BlockList[i].nodeID != 0)) {
+				nrfsFreeBlock((uint16_t)(bufferReceive->attribute.BlockList[i].nodeID),
+						bufferReceive->attribute.BlockList[i].indexMem,
+						1);
 			}
 		}
 		result = 0;

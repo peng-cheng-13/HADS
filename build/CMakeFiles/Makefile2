@@ -126,48 +126,13 @@ clean: CMakeFiles/fusenrfs.dir/clean
 .PHONY : clean
 
 #=============================================================================
-# Target rules for target CMakeFiles/jninrfs.dir
-
-# All Build rule for target.
-CMakeFiles/jninrfs.dir/all:
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/depend
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles  16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31
-	@echo "Built target jninrfs"
-.PHONY : CMakeFiles/jninrfs.dir/all
-
-# Include target in all.
-all: CMakeFiles/jninrfs.dir/all
-.PHONY : all
-
-# Build rule for subdir invocation for target.
-CMakeFiles/jninrfs.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles 16
-	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/jninrfs.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles 0
-.PHONY : CMakeFiles/jninrfs.dir/rule
-
-# Convenience name for target.
-jninrfs: CMakeFiles/jninrfs.dir/rule
-.PHONY : jninrfs
-
-# clean rule for target.
-CMakeFiles/jninrfs.dir/clean:
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/clean
-.PHONY : CMakeFiles/jninrfs.dir/clean
-
-# clean rule for target.
-clean: CMakeFiles/jninrfs.dir/clean
-.PHONY : clean
-
-#=============================================================================
 # Target rules for target CMakeFiles/locktest.dir
 
 # All Build rule for target.
 CMakeFiles/locktest.dir/all: CMakeFiles/nrfsc.dir/all
 	$(MAKE) -f CMakeFiles/locktest.dir/build.make CMakeFiles/locktest.dir/depend
 	$(MAKE) -f CMakeFiles/locktest.dir/build.make CMakeFiles/locktest.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles  32
+	$(CMAKE_COMMAND) -E cmake_progress_report /BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles  16
 	@echo "Built target locktest"
 .PHONY : CMakeFiles/locktest.dir/all
 
@@ -202,7 +167,7 @@ clean: CMakeFiles/locktest.dir/clean
 CMakeFiles/mpibw.dir/all: CMakeFiles/nrfsc.dir/all
 	$(MAKE) -f CMakeFiles/mpibw.dir/build.make CMakeFiles/mpibw.dir/depend
 	$(MAKE) -f CMakeFiles/mpibw.dir/build.make CMakeFiles/mpibw.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles  33
+	$(CMAKE_COMMAND) -E cmake_progress_report /BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles  17
 	@echo "Built target mpibw"
 .PHONY : CMakeFiles/mpibw.dir/all
 
@@ -237,7 +202,7 @@ clean: CMakeFiles/mpibw.dir/clean
 CMakeFiles/mpitest.dir/all: CMakeFiles/nrfsc.dir/all
 	$(MAKE) -f CMakeFiles/mpitest.dir/build.make CMakeFiles/mpitest.dir/depend
 	$(MAKE) -f CMakeFiles/mpitest.dir/build.make CMakeFiles/mpitest.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles  34
+	$(CMAKE_COMMAND) -E cmake_progress_report /BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles  18
 	@echo "Built target mpitest"
 .PHONY : CMakeFiles/mpitest.dir/all
 
@@ -272,7 +237,7 @@ clean: CMakeFiles/mpitest.dir/clean
 CMakeFiles/nrfsCli.dir/all: CMakeFiles/nrfsc.dir/all
 	$(MAKE) -f CMakeFiles/nrfsCli.dir/build.make CMakeFiles/nrfsCli.dir/depend
 	$(MAKE) -f CMakeFiles/nrfsCli.dir/build.make CMakeFiles/nrfsCli.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles  35
+	$(CMAKE_COMMAND) -E cmake_progress_report /BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles  19
 	@echo "Built target nrfsCli"
 .PHONY : CMakeFiles/nrfsCli.dir/all
 
@@ -307,7 +272,7 @@ clean: CMakeFiles/nrfsCli.dir/clean
 CMakeFiles/nrfsc.dir/all:
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/depend
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles  36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+	$(CMAKE_COMMAND) -E cmake_progress_report /BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles  20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35
 	@echo "Built target nrfsc"
 .PHONY : CMakeFiles/nrfsc.dir/all
 
@@ -342,7 +307,7 @@ clean: CMakeFiles/nrfsc.dir/clean
 CMakeFiles/nrfstest.dir/all: CMakeFiles/nrfsc.dir/all
 	$(MAKE) -f CMakeFiles/nrfstest.dir/build.make CMakeFiles/nrfstest.dir/depend
 	$(MAKE) -f CMakeFiles/nrfstest.dir/build.make CMakeFiles/nrfstest.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles  52
+	$(CMAKE_COMMAND) -E cmake_progress_report /BIGDATA/nsccgz_pcheng_1/src/octopus/build/CMakeFiles  36
 	@echo "Built target nrfstest"
 .PHONY : CMakeFiles/nrfstest.dir/all
 

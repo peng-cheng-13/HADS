@@ -119,6 +119,8 @@ stdint.h
 -
 time.h
 -
+vector
+-
 
 ../include/debug.hpp
 stdio.h
@@ -139,6 +141,8 @@ stdio.h
 -
 time.h
 -
+iostream
+-
 mutex
 -
 storage.hpp
@@ -147,8 +151,14 @@ debug.hpp
 ../include/debug.hpp
 global.h
 ../include/global.h
+hashtable.hpp
+../include/hashtable.hpp
 lock.h
 ../include/lock.h
+lrucache.hpp
+../include/lrucache.hpp
+thread
+-
 
 ../include/global.h
 stdint.h
@@ -194,6 +204,16 @@ cryptopp/sha.h
 stdint.h
 -
 unistd.h
+-
+
+../include/lrucache.hpp
+unordered_map
+-
+list
+-
+cstddef
+-
+stdexcept
 -
 
 ../include/mempool.hpp

@@ -94,7 +94,9 @@ bool RPCClient::RdmaCall(uint16_t DesNodeID, char *bufferSend, uint64_t lengthSe
 			}*/
 		}
 	}
+	Debug::debugItem("Ready to copy received data");
 	memcpy((void*)bufferReceive, (void *)receiveBuffer, lengthReceive);
+	Debug::debugItem("Data have been copied.");
 	return true;
 }
 

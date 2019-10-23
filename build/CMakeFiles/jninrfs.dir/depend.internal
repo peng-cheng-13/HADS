@@ -46,6 +46,7 @@ CMakeFiles/jninrfs.dir/src/fs/dmfs.cpp.o
  ../include/global.h
  ../include/hashtable.hpp
  ../include/lock.h
+ ../include/lrucache.hpp
  ../include/mempool.hpp
  ../include/storage.hpp
  ../include/table.hpp
@@ -63,6 +64,7 @@ CMakeFiles/jninrfs.dir/src/fs/filesystem.cpp.o
  ../include/global.h
  ../include/hashtable.hpp
  ../include/lock.h
+ ../include/lrucache.hpp
  ../include/mempool.hpp
  ../include/storage.hpp
  ../include/table.hpp
@@ -86,6 +88,7 @@ CMakeFiles/jninrfs.dir/src/fs/lock.cpp.o
  ../include/global.h
  ../include/hashtable.hpp
  ../include/lock.h
+ ../include/lrucache.hpp
  ../include/mempool.hpp
  ../include/storage.hpp
  ../include/table.hpp
@@ -126,6 +129,7 @@ CMakeFiles/jninrfs.dir/src/net/RPCServer.cpp.o
  ../include/global.h
  ../include/hashtable.hpp
  ../include/lock.h
+ ../include/lrucache.hpp
  ../include/mempool.hpp
  ../include/storage.hpp
  ../include/table.hpp

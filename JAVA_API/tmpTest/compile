@@ -1,0 +1,1 @@
+gcc hello.c -I/usr/software/java/jdk1.8.0_121/include -I/usr/software/java/jdk1.8.0_121/include/linux -shared -fPIC -o libhello.so

@@ -128,19 +128,6 @@ fusenrfs/fast:
 .PHONY : fusenrfs/fast
 
 #=============================================================================
-# Target rules for targets named jninrfs
-
-# Build rule for target.
-jninrfs: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 jninrfs
-.PHONY : jninrfs
-
-# fast build rule for target.
-jninrfs/fast:
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/build
-.PHONY : jninrfs/fast
-
-#=============================================================================
 # Target rules for targets named locktest
 
 # Build rule for target.
@@ -223,7 +210,6 @@ src/client/JavaApiImpl.o: src/client/JavaApiImpl.cpp.o
 
 # target to build an object file
 src/client/JavaApiImpl.cpp.o:
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/client/JavaApiImpl.cpp.o
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/client/JavaApiImpl.cpp.o
 .PHONY : src/client/JavaApiImpl.cpp.o
 
@@ -232,7 +218,6 @@ src/client/JavaApiImpl.i: src/client/JavaApiImpl.cpp.i
 
 # target to preprocess a source file
 src/client/JavaApiImpl.cpp.i:
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/client/JavaApiImpl.cpp.i
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/client/JavaApiImpl.cpp.i
 .PHONY : src/client/JavaApiImpl.cpp.i
 
@@ -241,7 +226,6 @@ src/client/JavaApiImpl.s: src/client/JavaApiImpl.cpp.s
 
 # target to generate assembly for a file
 src/client/JavaApiImpl.cpp.s:
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/client/JavaApiImpl.cpp.s
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/client/JavaApiImpl.cpp.s
 .PHONY : src/client/JavaApiImpl.cpp.s
 
@@ -250,7 +234,6 @@ src/client/libnrfs.o: src/client/libnrfs.cpp.o
 
 # target to build an object file
 src/client/libnrfs.cpp.o:
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/client/libnrfs.cpp.o
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/client/libnrfs.cpp.o
 .PHONY : src/client/libnrfs.cpp.o
 
@@ -259,7 +242,6 @@ src/client/libnrfs.i: src/client/libnrfs.cpp.i
 
 # target to preprocess a source file
 src/client/libnrfs.cpp.i:
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/client/libnrfs.cpp.i
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/client/libnrfs.cpp.i
 .PHONY : src/client/libnrfs.cpp.i
 
@@ -268,7 +250,6 @@ src/client/libnrfs.s: src/client/libnrfs.cpp.s
 
 # target to generate assembly for a file
 src/client/libnrfs.cpp.s:
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/client/libnrfs.cpp.s
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/client/libnrfs.cpp.s
 .PHONY : src/client/libnrfs.cpp.s
 
@@ -277,7 +258,6 @@ src/client/nrfs.o: src/client/nrfs.cpp.o
 
 # target to build an object file
 src/client/nrfs.cpp.o:
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/client/nrfs.cpp.o
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/client/nrfs.cpp.o
 .PHONY : src/client/nrfs.cpp.o
 
@@ -286,7 +266,6 @@ src/client/nrfs.i: src/client/nrfs.cpp.i
 
 # target to preprocess a source file
 src/client/nrfs.cpp.i:
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/client/nrfs.cpp.i
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/client/nrfs.cpp.i
 .PHONY : src/client/nrfs.cpp.i
 
@@ -295,7 +274,6 @@ src/client/nrfs.s: src/client/nrfs.cpp.s
 
 # target to generate assembly for a file
 src/client/nrfs.cpp.s:
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/client/nrfs.cpp.s
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/client/nrfs.cpp.s
 .PHONY : src/client/nrfs.cpp.s
 
@@ -305,7 +283,6 @@ src/fs/TxManager.o: src/fs/TxManager.cpp.o
 # target to build an object file
 src/fs/TxManager.cpp.o:
 	$(MAKE) -f CMakeFiles/dmfs.dir/build.make CMakeFiles/dmfs.dir/src/fs/TxManager.cpp.o
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/fs/TxManager.cpp.o
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/fs/TxManager.cpp.o
 .PHONY : src/fs/TxManager.cpp.o
 
@@ -315,7 +292,6 @@ src/fs/TxManager.i: src/fs/TxManager.cpp.i
 # target to preprocess a source file
 src/fs/TxManager.cpp.i:
 	$(MAKE) -f CMakeFiles/dmfs.dir/build.make CMakeFiles/dmfs.dir/src/fs/TxManager.cpp.i
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/fs/TxManager.cpp.i
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/fs/TxManager.cpp.i
 .PHONY : src/fs/TxManager.cpp.i
 
@@ -325,7 +301,6 @@ src/fs/TxManager.s: src/fs/TxManager.cpp.s
 # target to generate assembly for a file
 src/fs/TxManager.cpp.s:
 	$(MAKE) -f CMakeFiles/dmfs.dir/build.make CMakeFiles/dmfs.dir/src/fs/TxManager.cpp.s
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/fs/TxManager.cpp.s
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/fs/TxManager.cpp.s
 .PHONY : src/fs/TxManager.cpp.s
 
@@ -335,7 +310,6 @@ src/fs/bitmap.o: src/fs/bitmap.cpp.o
 # target to build an object file
 src/fs/bitmap.cpp.o:
 	$(MAKE) -f CMakeFiles/dmfs.dir/build.make CMakeFiles/dmfs.dir/src/fs/bitmap.cpp.o
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/fs/bitmap.cpp.o
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/fs/bitmap.cpp.o
 .PHONY : src/fs/bitmap.cpp.o
 
@@ -345,7 +319,6 @@ src/fs/bitmap.i: src/fs/bitmap.cpp.i
 # target to preprocess a source file
 src/fs/bitmap.cpp.i:
 	$(MAKE) -f CMakeFiles/dmfs.dir/build.make CMakeFiles/dmfs.dir/src/fs/bitmap.cpp.i
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/fs/bitmap.cpp.i
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/fs/bitmap.cpp.i
 .PHONY : src/fs/bitmap.cpp.i
 
@@ -355,7 +328,6 @@ src/fs/bitmap.s: src/fs/bitmap.cpp.s
 # target to generate assembly for a file
 src/fs/bitmap.cpp.s:
 	$(MAKE) -f CMakeFiles/dmfs.dir/build.make CMakeFiles/dmfs.dir/src/fs/bitmap.cpp.s
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/fs/bitmap.cpp.s
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/fs/bitmap.cpp.s
 .PHONY : src/fs/bitmap.cpp.s
 
@@ -365,7 +337,6 @@ src/fs/dmfs.o: src/fs/dmfs.cpp.o
 # target to build an object file
 src/fs/dmfs.cpp.o:
 	$(MAKE) -f CMakeFiles/dmfs.dir/build.make CMakeFiles/dmfs.dir/src/fs/dmfs.cpp.o
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/fs/dmfs.cpp.o
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/fs/dmfs.cpp.o
 .PHONY : src/fs/dmfs.cpp.o
 
@@ -375,7 +346,6 @@ src/fs/dmfs.i: src/fs/dmfs.cpp.i
 # target to preprocess a source file
 src/fs/dmfs.cpp.i:
 	$(MAKE) -f CMakeFiles/dmfs.dir/build.make CMakeFiles/dmfs.dir/src/fs/dmfs.cpp.i
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/fs/dmfs.cpp.i
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/fs/dmfs.cpp.i
 .PHONY : src/fs/dmfs.cpp.i
 
@@ -385,7 +355,6 @@ src/fs/dmfs.s: src/fs/dmfs.cpp.s
 # target to generate assembly for a file
 src/fs/dmfs.cpp.s:
 	$(MAKE) -f CMakeFiles/dmfs.dir/build.make CMakeFiles/dmfs.dir/src/fs/dmfs.cpp.s
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/fs/dmfs.cpp.s
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/fs/dmfs.cpp.s
 .PHONY : src/fs/dmfs.cpp.s
 
@@ -395,7 +364,6 @@ src/fs/filesystem.o: src/fs/filesystem.cpp.o
 # target to build an object file
 src/fs/filesystem.cpp.o:
 	$(MAKE) -f CMakeFiles/dmfs.dir/build.make CMakeFiles/dmfs.dir/src/fs/filesystem.cpp.o
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/fs/filesystem.cpp.o
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/fs/filesystem.cpp.o
 .PHONY : src/fs/filesystem.cpp.o
 
@@ -405,7 +373,6 @@ src/fs/filesystem.i: src/fs/filesystem.cpp.i
 # target to preprocess a source file
 src/fs/filesystem.cpp.i:
 	$(MAKE) -f CMakeFiles/dmfs.dir/build.make CMakeFiles/dmfs.dir/src/fs/filesystem.cpp.i
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/fs/filesystem.cpp.i
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/fs/filesystem.cpp.i
 .PHONY : src/fs/filesystem.cpp.i
 
@@ -415,7 +382,6 @@ src/fs/filesystem.s: src/fs/filesystem.cpp.s
 # target to generate assembly for a file
 src/fs/filesystem.cpp.s:
 	$(MAKE) -f CMakeFiles/dmfs.dir/build.make CMakeFiles/dmfs.dir/src/fs/filesystem.cpp.s
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/fs/filesystem.cpp.s
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/fs/filesystem.cpp.s
 .PHONY : src/fs/filesystem.cpp.s
 
@@ -425,7 +391,6 @@ src/fs/hashtable.o: src/fs/hashtable.cpp.o
 # target to build an object file
 src/fs/hashtable.cpp.o:
 	$(MAKE) -f CMakeFiles/dmfs.dir/build.make CMakeFiles/dmfs.dir/src/fs/hashtable.cpp.o
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/fs/hashtable.cpp.o
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/fs/hashtable.cpp.o
 .PHONY : src/fs/hashtable.cpp.o
 
@@ -435,7 +400,6 @@ src/fs/hashtable.i: src/fs/hashtable.cpp.i
 # target to preprocess a source file
 src/fs/hashtable.cpp.i:
 	$(MAKE) -f CMakeFiles/dmfs.dir/build.make CMakeFiles/dmfs.dir/src/fs/hashtable.cpp.i
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/fs/hashtable.cpp.i
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/fs/hashtable.cpp.i
 .PHONY : src/fs/hashtable.cpp.i
 
@@ -445,7 +409,6 @@ src/fs/hashtable.s: src/fs/hashtable.cpp.s
 # target to generate assembly for a file
 src/fs/hashtable.cpp.s:
 	$(MAKE) -f CMakeFiles/dmfs.dir/build.make CMakeFiles/dmfs.dir/src/fs/hashtable.cpp.s
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/fs/hashtable.cpp.s
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/fs/hashtable.cpp.s
 .PHONY : src/fs/hashtable.cpp.s
 
@@ -455,7 +418,6 @@ src/fs/lock.o: src/fs/lock.cpp.o
 # target to build an object file
 src/fs/lock.cpp.o:
 	$(MAKE) -f CMakeFiles/dmfs.dir/build.make CMakeFiles/dmfs.dir/src/fs/lock.cpp.o
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/fs/lock.cpp.o
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/fs/lock.cpp.o
 .PHONY : src/fs/lock.cpp.o
 
@@ -465,7 +427,6 @@ src/fs/lock.i: src/fs/lock.cpp.i
 # target to preprocess a source file
 src/fs/lock.cpp.i:
 	$(MAKE) -f CMakeFiles/dmfs.dir/build.make CMakeFiles/dmfs.dir/src/fs/lock.cpp.i
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/fs/lock.cpp.i
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/fs/lock.cpp.i
 .PHONY : src/fs/lock.cpp.i
 
@@ -475,7 +436,6 @@ src/fs/lock.s: src/fs/lock.cpp.s
 # target to generate assembly for a file
 src/fs/lock.cpp.s:
 	$(MAKE) -f CMakeFiles/dmfs.dir/build.make CMakeFiles/dmfs.dir/src/fs/lock.cpp.s
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/fs/lock.cpp.s
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/fs/lock.cpp.s
 .PHONY : src/fs/lock.cpp.s
 
@@ -509,7 +469,6 @@ src/fs/storage.o: src/fs/storage.cpp.o
 # target to build an object file
 src/fs/storage.cpp.o:
 	$(MAKE) -f CMakeFiles/dmfs.dir/build.make CMakeFiles/dmfs.dir/src/fs/storage.cpp.o
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/fs/storage.cpp.o
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/fs/storage.cpp.o
 .PHONY : src/fs/storage.cpp.o
 
@@ -519,7 +478,6 @@ src/fs/storage.i: src/fs/storage.cpp.i
 # target to preprocess a source file
 src/fs/storage.cpp.i:
 	$(MAKE) -f CMakeFiles/dmfs.dir/build.make CMakeFiles/dmfs.dir/src/fs/storage.cpp.i
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/fs/storage.cpp.i
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/fs/storage.cpp.i
 .PHONY : src/fs/storage.cpp.i
 
@@ -529,7 +487,6 @@ src/fs/storage.s: src/fs/storage.cpp.s
 # target to generate assembly for a file
 src/fs/storage.cpp.s:
 	$(MAKE) -f CMakeFiles/dmfs.dir/build.make CMakeFiles/dmfs.dir/src/fs/storage.cpp.s
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/fs/storage.cpp.s
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/fs/storage.cpp.s
 .PHONY : src/fs/storage.cpp.s
 
@@ -539,7 +496,6 @@ src/net/Configuration.o: src/net/Configuration.cpp.o
 # target to build an object file
 src/net/Configuration.cpp.o:
 	$(MAKE) -f CMakeFiles/dmfs.dir/build.make CMakeFiles/dmfs.dir/src/net/Configuration.cpp.o
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/net/Configuration.cpp.o
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/net/Configuration.cpp.o
 .PHONY : src/net/Configuration.cpp.o
 
@@ -549,7 +505,6 @@ src/net/Configuration.i: src/net/Configuration.cpp.i
 # target to preprocess a source file
 src/net/Configuration.cpp.i:
 	$(MAKE) -f CMakeFiles/dmfs.dir/build.make CMakeFiles/dmfs.dir/src/net/Configuration.cpp.i
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/net/Configuration.cpp.i
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/net/Configuration.cpp.i
 .PHONY : src/net/Configuration.cpp.i
 
@@ -559,7 +514,6 @@ src/net/Configuration.s: src/net/Configuration.cpp.s
 # target to generate assembly for a file
 src/net/Configuration.cpp.s:
 	$(MAKE) -f CMakeFiles/dmfs.dir/build.make CMakeFiles/dmfs.dir/src/net/Configuration.cpp.s
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/net/Configuration.cpp.s
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/net/Configuration.cpp.s
 .PHONY : src/net/Configuration.cpp.s
 
@@ -569,7 +523,6 @@ src/net/RPCClient.o: src/net/RPCClient.cpp.o
 # target to build an object file
 src/net/RPCClient.cpp.o:
 	$(MAKE) -f CMakeFiles/dmfs.dir/build.make CMakeFiles/dmfs.dir/src/net/RPCClient.cpp.o
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/net/RPCClient.cpp.o
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/net/RPCClient.cpp.o
 .PHONY : src/net/RPCClient.cpp.o
 
@@ -579,7 +532,6 @@ src/net/RPCClient.i: src/net/RPCClient.cpp.i
 # target to preprocess a source file
 src/net/RPCClient.cpp.i:
 	$(MAKE) -f CMakeFiles/dmfs.dir/build.make CMakeFiles/dmfs.dir/src/net/RPCClient.cpp.i
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/net/RPCClient.cpp.i
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/net/RPCClient.cpp.i
 .PHONY : src/net/RPCClient.cpp.i
 
@@ -589,7 +541,6 @@ src/net/RPCClient.s: src/net/RPCClient.cpp.s
 # target to generate assembly for a file
 src/net/RPCClient.cpp.s:
 	$(MAKE) -f CMakeFiles/dmfs.dir/build.make CMakeFiles/dmfs.dir/src/net/RPCClient.cpp.s
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/net/RPCClient.cpp.s
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/net/RPCClient.cpp.s
 .PHONY : src/net/RPCClient.cpp.s
 
@@ -599,7 +550,6 @@ src/net/RPCServer.o: src/net/RPCServer.cpp.o
 # target to build an object file
 src/net/RPCServer.cpp.o:
 	$(MAKE) -f CMakeFiles/dmfs.dir/build.make CMakeFiles/dmfs.dir/src/net/RPCServer.cpp.o
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/net/RPCServer.cpp.o
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/net/RPCServer.cpp.o
 .PHONY : src/net/RPCServer.cpp.o
 
@@ -609,7 +559,6 @@ src/net/RPCServer.i: src/net/RPCServer.cpp.i
 # target to preprocess a source file
 src/net/RPCServer.cpp.i:
 	$(MAKE) -f CMakeFiles/dmfs.dir/build.make CMakeFiles/dmfs.dir/src/net/RPCServer.cpp.i
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/net/RPCServer.cpp.i
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/net/RPCServer.cpp.i
 .PHONY : src/net/RPCServer.cpp.i
 
@@ -619,7 +568,6 @@ src/net/RPCServer.s: src/net/RPCServer.cpp.s
 # target to generate assembly for a file
 src/net/RPCServer.cpp.s:
 	$(MAKE) -f CMakeFiles/dmfs.dir/build.make CMakeFiles/dmfs.dir/src/net/RPCServer.cpp.s
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/net/RPCServer.cpp.s
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/net/RPCServer.cpp.s
 .PHONY : src/net/RPCServer.cpp.s
 
@@ -629,7 +577,6 @@ src/net/RdmaSocket.o: src/net/RdmaSocket.cpp.o
 # target to build an object file
 src/net/RdmaSocket.cpp.o:
 	$(MAKE) -f CMakeFiles/dmfs.dir/build.make CMakeFiles/dmfs.dir/src/net/RdmaSocket.cpp.o
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/net/RdmaSocket.cpp.o
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/net/RdmaSocket.cpp.o
 .PHONY : src/net/RdmaSocket.cpp.o
 
@@ -639,7 +586,6 @@ src/net/RdmaSocket.i: src/net/RdmaSocket.cpp.i
 # target to preprocess a source file
 src/net/RdmaSocket.cpp.i:
 	$(MAKE) -f CMakeFiles/dmfs.dir/build.make CMakeFiles/dmfs.dir/src/net/RdmaSocket.cpp.i
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/net/RdmaSocket.cpp.i
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/net/RdmaSocket.cpp.i
 .PHONY : src/net/RdmaSocket.cpp.i
 
@@ -649,7 +595,6 @@ src/net/RdmaSocket.s: src/net/RdmaSocket.cpp.s
 # target to generate assembly for a file
 src/net/RdmaSocket.cpp.s:
 	$(MAKE) -f CMakeFiles/dmfs.dir/build.make CMakeFiles/dmfs.dir/src/net/RdmaSocket.cpp.s
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/net/RdmaSocket.cpp.s
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/net/RdmaSocket.cpp.s
 .PHONY : src/net/RdmaSocket.cpp.s
 
@@ -659,7 +604,6 @@ src/net/mempool.o: src/net/mempool.cpp.o
 # target to build an object file
 src/net/mempool.cpp.o:
 	$(MAKE) -f CMakeFiles/dmfs.dir/build.make CMakeFiles/dmfs.dir/src/net/mempool.cpp.o
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/net/mempool.cpp.o
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/net/mempool.cpp.o
 .PHONY : src/net/mempool.cpp.o
 
@@ -669,7 +613,6 @@ src/net/mempool.i: src/net/mempool.cpp.i
 # target to preprocess a source file
 src/net/mempool.cpp.i:
 	$(MAKE) -f CMakeFiles/dmfs.dir/build.make CMakeFiles/dmfs.dir/src/net/mempool.cpp.i
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/net/mempool.cpp.i
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/net/mempool.cpp.i
 .PHONY : src/net/mempool.cpp.i
 
@@ -679,7 +622,6 @@ src/net/mempool.s: src/net/mempool.cpp.s
 # target to generate assembly for a file
 src/net/mempool.cpp.s:
 	$(MAKE) -f CMakeFiles/dmfs.dir/build.make CMakeFiles/dmfs.dir/src/net/mempool.cpp.s
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/net/mempool.cpp.s
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/net/mempool.cpp.s
 .PHONY : src/net/mempool.cpp.s
 
@@ -833,7 +775,6 @@ src/tools/debug.o: src/tools/debug.cpp.o
 # target to build an object file
 src/tools/debug.cpp.o:
 	$(MAKE) -f CMakeFiles/dmfs.dir/build.make CMakeFiles/dmfs.dir/src/tools/debug.cpp.o
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/tools/debug.cpp.o
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/tools/debug.cpp.o
 .PHONY : src/tools/debug.cpp.o
 
@@ -843,7 +784,6 @@ src/tools/debug.i: src/tools/debug.cpp.i
 # target to preprocess a source file
 src/tools/debug.cpp.i:
 	$(MAKE) -f CMakeFiles/dmfs.dir/build.make CMakeFiles/dmfs.dir/src/tools/debug.cpp.i
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/tools/debug.cpp.i
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/tools/debug.cpp.i
 .PHONY : src/tools/debug.cpp.i
 
@@ -853,7 +793,6 @@ src/tools/debug.s: src/tools/debug.cpp.s
 # target to generate assembly for a file
 src/tools/debug.cpp.s:
 	$(MAKE) -f CMakeFiles/dmfs.dir/build.make CMakeFiles/dmfs.dir/src/tools/debug.cpp.s
-	$(MAKE) -f CMakeFiles/jninrfs.dir/build.make CMakeFiles/jninrfs.dir/src/tools/debug.cpp.s
 	$(MAKE) -f CMakeFiles/nrfsc.dir/build.make CMakeFiles/nrfsc.dir/src/tools/debug.cpp.s
 .PHONY : src/tools/debug.cpp.s
 
@@ -866,7 +805,6 @@ help:
 	@echo "... dmfs"
 	@echo "... edit_cache"
 	@echo "... fusenrfs"
-	@echo "... jninrfs"
 	@echo "... locktest"
 	@echo "... mpibw"
 	@echo "... mpitest"

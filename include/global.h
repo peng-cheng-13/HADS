@@ -16,7 +16,7 @@ static inline uint32_t gettid() {
     return (uint32_t)syscall(SYS_gettid);
 }
 
-#define CLIENT_MESSAGE_SIZE 8192
+#define CLIENT_MESSAGE_SIZE 81920
 #define MAX_CLIENT_NUMBER   1024
 #define SERVER_MASSAGE_SIZE CLIENT_MESSAGE_SIZE
 #define SERVER_MASSAGE_NUM 8
@@ -24,6 +24,7 @@ static inline uint32_t gettid() {
 #define LOCALLOGSIZE (40 * 1024 * 1024)
 #define DISTRIBUTEDLOGSIZE (1024 * 1024)
 #define EXTRADATASIZE (8 * 1024) /*MB*/
+#define RDMA_DATASIZE 1536 /*MB*/
 #define DB_PATH "/tmp/KCDB"
 
 // #define TRANSACTION_2PC 1
@@ -56,7 +57,11 @@ typedef enum {                          /* Message enumerator. */
     MESSAGE_DOCOMMIT,
     MESSAGE_READDIRECTORYMETA,
     MESSAGE_INVALID,
-    MESSAGE_NOTDIR
+    MESSAGE_NOTDIR,
+    MESSAGE_CREATEBLOCK,
+    MESSAGE_READBLOCK,
+    MESSAGE_REMOVEBLOCK,
+    MESSAGE_GETBLOCKINFO
 } Message;
 
 typedef struct {                        /* Extra information structure. */
@@ -69,15 +74,34 @@ typedef struct : ExtraInformation {     /* General send buffer structure. */
     Message message;                    /* Message type. */
     char path[MAX_PATH_LENGTH];         /* Path. */
 } GeneralSendBuffer;
+
 typedef struct : ExtraInformation {
 	Message message;
 	uint64_t startBlock;
 	uint64_t countBlock;
 } BlockFreeSendBuffer;
 
+typedef struct : ExtraInformation {
+	Message message;
+	uint64_t uniqueHashValue;
+	uint16_t BlockID;
+	uint16_t Storagetier;
+	uint64_t StorageAddress;
+        bool writeOperation;
+} BlockRequestSendBuffer;
+
+typedef struct : ExtraInformation {
+        Message message;
+        uint32_t indexCache;
+	uint32_t indexMem;
+        uint64_t StorageAddress;
+        bool result;
+} BlockRequestReceiveBuffer;
+
+
 typedef struct : ExtraInformation {     /* General receive buffer structure. */
 	Message message;                    /* Message type. */
-    bool result;                        /* Result. */
+        bool result;                        /* Result. */
 } GeneralReceiveBuffer;
 
 typedef struct : ExtraInformation {     /* addMetaToDirectory send buffer structure. */
@@ -142,6 +166,7 @@ typedef struct : ExtraInformation {     /* rename send buffer structure. */
 typedef struct : ExtraInformation {     /* getattr receive buffer structure. */
     Message message;                    /* Message type. */
     bool result;                        /* Result. */
+    BlockInfo BlockList[MAX_MESSAGE_BLOCK_COUNT];
     FileMeta attribute;             	/* Attribute. */
 } GetAttributeReceiveBuffer;
 
@@ -195,7 +220,7 @@ private:
     std::vector<T> queue;
     std::mutex m;
     std::condition_variable cond;
-    uint8_t offset = 0;
+    uint64_t offset = 0;
 public:
     Queue(){}
     ~Queue(){}
