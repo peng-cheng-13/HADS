@@ -155,8 +155,8 @@ hashtable.hpp
 ../include/hashtable.hpp
 lock.h
 ../include/lock.h
-lrucache.hpp
-../include/lrucache.hpp
+unordered_set
+-
 thread
 -
 
@@ -247,6 +247,8 @@ kcdirdb.h
 ../include/kcdirdb.h
 kcdirdb.h
 ../include/kcdirdb.h
+lrucache.hpp
+../include/lrucache.hpp
 
 ../include/table.hpp
 stdint.h

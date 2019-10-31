@@ -2,11 +2,11 @@
 <address>
 	<node>
                 <id>1</id>
-                <ip>12.11.199.130</ip>
+                <ip>12.11.199.131</ip>
         </node>
 	<node>
                 <id>2</id>
-                <ip>12.11.199.131</ip>
+                <ip>12.11.199.132</ip>
         </node>
 </address>
 

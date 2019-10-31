@@ -1561,8 +1561,8 @@ bool FileSystem::fillRDMARegionV2(uint64_t uniqueHashValue, uint64_t BlockID, ui
     /*Init a new block*/
     BlockInfo *newBlock = (BlockInfo *)malloc(sizeof(BlockInfo));
 
-    if (BlockManager->exists(uniqueHashValue)) {
-	*newBlock = BlockManager->get(uniqueHashValue);
+    if (storage->BlockManager->exists(uniqueHashValue)) {
+	*newBlock = storage->BlockManager->get(uniqueHashValue);
 	return true;
     } else {
 	newBlock->tier = tier;
@@ -1611,6 +1611,7 @@ bool FileSystem::fillRDMARegion(uint64_t uniqueHashValue, uint64_t BlockID, Bloc
     uint64_t indexCurrentExtraBlock;
     /*Init a new block*/
     BlockInfo *newBlock = (BlockInfo *)malloc(sizeof(BlockInfo));
+    newBlock->BlockID = block->BlockID;
     newBlock->tier = block->tier;
     newBlock->isDirty = writeOperation;
     newBlock->present = true;
@@ -1635,7 +1636,7 @@ bool FileSystem::fillRDMARegion(uint64_t uniqueHashValue, uint64_t BlockID, Bloc
             void *dest  = (void *)(RdmaZoneBaseAddress + indexCurrentExtraBlock * BLOCK_SIZE);
             Debug::debugItem("src = %ld, dest = %ld", (long)block->StorageAddress, (long)(RdmaZoneBaseAddress + indexCurrentExtraBlock * BLOCK_SIZE));
             memcpy(dest, src, BLOCK_SIZE);
-            Debug::debugItem("Copy data from Memory tier");
+            Debug::debugItem("Copy data from Memory tier, src = %ld", (long)block->StorageAddress);
 	} else {
            Debug::debugItem("Copy data from SSD tier");
 	   const char *key = ltos((long)uniqueHashValue).data();
@@ -2430,23 +2431,20 @@ bool FileSystem::extentRead(const char *path, uint64_t size, uint64_t offset, fi
         	                sprintf(key, "%s_%d", path, (int)metaFile.BlockList[i].BlockID);
                 	        uint64_t uniqueHashValue = getAddressHash(key);
 				if (metaFile.BlockList[i].nodeID == (uint16_t)hashLocalNode) {
-				    if (!BlockManager->exists(uniqueHashValue)) {
+				    if (!storage->BlockManager->exists(uniqueHashValue)) {
 					Debug::debugItem("Fill RDMA region once in local node, Block ID is %d", (int)i);
 					//fillRDMARegion(uniqueHashValue, i, &metaFile.BlockList[i], path, false);
                                         /*v2*/
                                         
-                                        if (Prefetch_stride.previous_blockID == i) {
-                                          Debug::debugItem("Prefetch_stride.previous_blockID is %d", Prefetch_stride.previous_blockID);
-                                          //while (FetchSignal != 1) {
-                                          //  ;
-                                          //}
-                                          while (!BlockManager->exists(uniqueHashValue)) {
+                                        if (PrefetchManager->find(uniqueHashValue) != PrefetchManager->end()) { //if (Prefetch_stride.previous_blockID == i) {
+                                          Debug::debugItem("Block %d has been added to the prefetch queue", i);
+                                          while (!storage->BlockManager->exists(uniqueHashValue)) {
                                             ;
                                           }
                                         } else {
                                           fillRDMARegion(uniqueHashValue, i, &metaFile.BlockList[i], path, false);
                                         }
-                                        if (BlockManager->exists(uniqueHashValue)) {
+                                        if (storage->BlockManager->exists(uniqueHashValue)) {
                                           Debug::debugItem("Wait and Block %d is prefetched", (int)i);
                                         } else {
                                           Debug::notifyError("Block %d does not exist in RDMA region", (int)i);
@@ -2456,6 +2454,10 @@ bool FileSystem::extentRead(const char *path, uint64_t size, uint64_t offset, fi
 				    } else {
                                         Debug::debugItem("Block %d exists", (int)i);
                                     }
+                                    /*Prefetched block must be moved from the prefetch queue.*/
+                                    PrefetchManager->erase(uniqueHashValue);
+                                    Debug::debugItem("PrefetchManager erase key %s", key);
+
 				} else {
 				    Debug::debugItem("Sent block read request to remote node");
 				    fillRemoteBlock(uniqueHashValue, &metaFile.BlockList[i], false);
@@ -2465,33 +2467,39 @@ bool FileSystem::extentRead(const char *path, uint64_t size, uint64_t offset, fi
 			    result = true;
 
                             /*Prefetch*/
-			    
-                            int Prefetch_blockID = i;
-                            if (Prefetch_blockID < metaFile.count) {
-                              char *Prefetch_key = (char *)malloc(sizeof(char) * (strlen(path) + 5));
-                              sprintf(Prefetch_key, "%s_%d", path, (int)metaFile.BlockList[Prefetch_blockID].BlockID);
-                              Debug::debugItem("Prefetch_key is %s", Prefetch_key);
-                              Debug::debugItem("Current block address is %ld", (long)metaFile.BlockList[Prefetch_blockID].StorageAddress);
-                              uint64_t Prefetch_uniqueHashValue = getAddressHash(Prefetch_key);
- 
-                              if (metaFile.BlockList[Prefetch_blockID].nodeID == (uint16_t)hashLocalNode) {
-                                if (!BlockManager->exists(Prefetch_uniqueHashValue)) {
-                                  Debug::debugItem("Call preftch thread once\n");
-                                  PrefetchTask task[1];
-                                  task[0].localNode = true;
-                                  task[0].uniqueHashValue = Prefetch_uniqueHashValue;
-                                  task[0].blockID = Prefetch_blockID;
-                                  task[0].block = metaFile.BlockList[Prefetch_blockID];
-                                  task[0].path = path;
-                                  task[0].writeOperation = false;
-                                  Prefetch_stride.previous_blockID = Prefetch_blockID;
-                                  FetchSignal = 0;
-                                  Prefetch_queue[0].push(&task[0]);
-                                  Debug::debugItem("Push prefetch request once, BlockID is %d, address is %ld", Prefetch_blockID, (long)task[0].block.StorageAddress);
+                            for (int j = i; j < i + PREFETCHER_NUMBER; j++) {
+                              int Prefetch_blockID = j;
+                              if (Prefetch_blockID < metaFile.count) {
+                                char *Prefetch_key = (char *)malloc(sizeof(char) * (strlen(path) + 5));
+                                sprintf(Prefetch_key, "%s_%d", path, (int)metaFile.BlockList[Prefetch_blockID].BlockID);
+                                Debug::debugItem("Prefetch_key is %s", Prefetch_key);
+                                Debug::debugItem("Current block address is %ld", (long)metaFile.BlockList[Prefetch_blockID].StorageAddress);
+                                uint64_t Prefetch_uniqueHashValue = getAddressHash(Prefetch_key);
+
+                                /*If current request has been filled in the prefetch queue, breck to next circle*/
+                                if (PrefetchManager->find(Prefetch_uniqueHashValue) != PrefetchManager->end()) {
+                                  continue;
+                                }
+                                PrefetchTask task[PREFETCHER_NUMBER];
+                                int taskid = j % PREFETCHER_NUMBER;
+                                if (metaFile.BlockList[Prefetch_blockID].nodeID == (uint16_t)hashLocalNode) {
+                                  if (!storage->BlockManager->exists(Prefetch_uniqueHashValue)) {
+                                    Debug::debugItem("Call preftch thread once\n");
+                                    task[taskid].localNode = true;
+                                    task[taskid].uniqueHashValue = Prefetch_uniqueHashValue;
+                                    task[taskid].blockID = Prefetch_blockID;
+                                    task[taskid].block = metaFile.BlockList[Prefetch_blockID];
+                                    task[taskid].path = path;
+                                    task[taskid].writeOperation = false;
+                                    Prefetch_stride.previous_blockID = Prefetch_blockID;
+                                    FetchSignal = 0;
+                                    Prefetch_queue[taskid].push(&task[taskid]);
+                                    PrefetchManager->insert(Prefetch_uniqueHashValue);
+                                    Debug::debugItem("Push prefetch request once, BlockID is %d, address is %ld", Prefetch_blockID, (long)task[0].block.StorageAddress);
+                                  }
                                 }
                               }
                             }
-                            
                             /*if ((Prefetch_blockID - Prefetch_stride.previous_blockID) == Prefetch_stride.stride) {
                                   Prefetch_stride.Hitonce = false;
                               } else {
@@ -2635,7 +2643,7 @@ bool FileSystem::extentWrite(const char *path, uint64_t size, uint64_t offset, f
                         uint64_t uniqueHashValue = getAddressHash(key);
 
 			if (metaFile->BlockList[i].nodeID == (uint16_t)hashLocalNode) {
- 			    if (!BlockManager->exists(uniqueHashValue)) {
+ 			    if (!storage->BlockManager->exists(uniqueHashValue)) {
 				Debug::debugItem("Fill RDMA region once in local node, Block ID is %d", (int)i);
 				fillRDMARegion(uniqueHashValue, i, &metaFile->BlockList[i], path, true);
 			    }
@@ -2824,46 +2832,47 @@ uint64_t FileSystem::getAddressHash(char *path) {
 /*Insert a block to BlockManager, and repalce an obsolete block with LRU strategy*/
 bool FileSystem::LRUInsert(uint64_t key, BlockInfo *newBlock) {
     Debug::debugItem("LRUInsert:: Call LRUInsert once");
-    BlockInfo oldBlock;
-    oldBlock = BlockManager->put(key, *newBlock);
+    BlockInfo *oldBlock = (BlockInfo *)malloc(sizeof(BlockInfo));
+    *oldBlock = storage->BlockManager->put(key, *newBlock);
+
     /*Evict an obsolete block*/
-    if ((long)oldBlock.StorageAddress != 0L) {
-	Debug::debugItem("LRUInsert:: Evict one block with LRU strategy, BlockID is %d", oldBlock.BlockID);
+    if ((long)oldBlock->StorageAddress != 0L) {
+	Debug::debugItem("LRUInsert:: Evict one block with LRU strategy, BlockID is %d", oldBlock->BlockID);
 	/*If block is clean, remove the block in memory and return*/
-	if (!oldBlock.isDirty) {
-	    storage->tableBlock->remove(oldBlock.indexCache);
+	if (!oldBlock->isDirty) {
+	    storage->tableBlock->remove(oldBlock->indexCache);
 	    return true;
 	}
 	/*If block is dirty, copy data to memory tier or SSD tier*/
-	if (oldBlock.tier == 0) {
+	if (oldBlock->tier == 0) {
 	    uint64_t MemZoneBaseAddress = server->getMemoryManagerInstance()->getExtraDataAddress();
 	    uint64_t RdmaZoneBaseAddress = server->getMemoryManagerInstance()->getDataAddress();
-	    void *dest = (void *) (oldBlock.StorageAddress);
-	    void *src  = (void *) (RdmaZoneBaseAddress + oldBlock.indexCache * BLOCK_SIZE);
+	    void *dest = (void *) (oldBlock->StorageAddress);
+	    void *src  = (void *) (RdmaZoneBaseAddress + oldBlock->indexCache * BLOCK_SIZE);
             Debug::debugItem("LRUInsert:: src is %ld, dest is %ld", (long)src, (long)dest);
 	    memcpy(dest, src, BLOCK_SIZE);
 	    Debug::debugItem("LRUInsert:: Dirty data have been moved to the memory tier");
-	} else if (oldBlock.tier == 1) {
+	} else if (oldBlock->tier == 1) {
 	    uint64_t RdmaZoneBaseAddress = server->getMemoryManagerInstance()->getDataAddress();
-	    const char *key = ltos((long)oldBlock.StorageAddress).data();
-	    void *value  = (void *) (RdmaZoneBaseAddress + oldBlock.indexCache * BLOCK_SIZE);
+	    const char *key = ltos((long)oldBlock->StorageAddress).data();
+	    void *value  = (void *) (RdmaZoneBaseAddress + oldBlock->indexCache * BLOCK_SIZE);
 	    storage->db.set((const char *)key, sizeof(key), (const char *)value, BLOCK_SIZE);
 	    Debug::debugItem("LRUInsert:: Dirty data have been moved to the SSD tier");
 	}
-	storage->tableBlock->remove(oldBlock.indexCache);
+	storage->tableBlock->remove(oldBlock->indexCache);
     }
     return true;
 }
 
 /*Prefetch Task*/
-bool FileSystem::PrefetcherWorker() {
+bool FileSystem::PrefetcherWorker(int id) {
   PrefetchTask *task;
   while (true) {
-    task = Prefetch_queue[0].pop();
-    Debug::debugItem("Pop prefetch request once");
+    task = Prefetch_queue[id].pop();
+    Debug::debugItem("Pop prefetch request once from Prefetch_queue %d", id);
     if (task->localNode) {
       Debug::debugItem("Prefetch Block %d, address is %ld", task->blockID, (long)task->block.StorageAddress);
-      if (!BlockManager->exists(task->uniqueHashValue)) {
+      if (!storage->BlockManager->exists(task->uniqueHashValue)) {
         fillRDMARegion(task->uniqueHashValue, task->blockID, &task->block, task->path, task->writeOperation);
         __sync_fetch_and_add(&FetchSignal, 1);
       }
@@ -2898,9 +2907,12 @@ FileSystem::FileSystem(char *buffer, char *bufferBlock, char *extraBlock, uint64
         lock = new LockService((uint64_t)buffer);
 	printf("Debug-FileSystem.cpp: lock service done\n");
     }
-    uint64_t RdmaBlockCount = RDMA_DATASIZE * 1024 * 1024 / BLOCK_SIZE;
-    BlockManager = new cache::lru_cache<uint64_t, BlockInfo>(RdmaBlockCount);
-    Prefecther = thread(&FileSystem::PrefetcherWorker, this);
+    //uint64_t RdmaBlockCount = RDMA_DATASIZE * 1024 * 1024 / BLOCK_SIZE;
+    //BlockManager = new cache::lru_cache<uint64_t, BlockInfo>(RdmaBlockCount);
+    PrefetchManager = new std::unordered_set<uint64_t>(64);
+    for (int i = 0; i < PREFETCHER_NUMBER; i++) {
+      Prefecther[i] = thread(&FileSystem::PrefetcherWorker, this, i);
+    }
     Debug::debugItem("FileSystem:: Init prefetch thread");
     Prefetch_stride.previous_blockID = -1;
     Prefetch_stride.stride = 1;
@@ -2910,5 +2922,5 @@ FileSystem::FileSystem(char *buffer, char *bufferBlock, char *extraBlock, uint64
 FileSystem::~FileSystem()
 {
     delete storage;                     /* Release storage instance. */
-    Prefecther.detach();
+    Prefecther[0].detach();
 }

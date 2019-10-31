@@ -76,6 +76,7 @@ CMakeFiles/dmfs.dir/src/fs/storage.cpp.o: ../include/common.hpp
 CMakeFiles/dmfs.dir/src/fs/storage.cpp.o: ../include/debug.hpp
 CMakeFiles/dmfs.dir/src/fs/storage.cpp.o: ../include/global.h
 CMakeFiles/dmfs.dir/src/fs/storage.cpp.o: ../include/hashtable.hpp
+CMakeFiles/dmfs.dir/src/fs/storage.cpp.o: ../include/lrucache.hpp
 CMakeFiles/dmfs.dir/src/fs/storage.cpp.o: ../include/storage.hpp
 CMakeFiles/dmfs.dir/src/fs/storage.cpp.o: ../include/table.hpp
 CMakeFiles/dmfs.dir/src/fs/storage.cpp.o: ../src/fs/storage.cpp

@@ -19,10 +19,12 @@
 #include "global.h"                     /* Global header. */
 #include "hashtable.hpp"
 #include "lock.h"
-#include "lrucache.hpp"
+#include <unordered_set>
 #include <thread>
 
 /** Classes. **/
+
+#define PREFETCHER_NUMBER 4
 
 typedef struct {
        bool localNode;
@@ -45,7 +47,7 @@ private:
     Storage *storage;                   /* Storage. */
     NodeHash hashLocalNode;             /* Local node hash. */
     LockService *lock;
-    cache::lru_cache<uint64_t, BlockInfo> *BlockManager;
+    std::unordered_set<uint64_t> *PrefetchManager;
     uint64_t addressHashTable;
     bool checkLocal(NodeHash hashNode); /* Check if node hash is local. */
     bool getParentDirectory(const char *path, char *parent); /* Get parent directory. */
@@ -65,12 +67,12 @@ private:
     std::string ltos(long l);
     uint64_t getAddressHash(char *path);
     bool LRUInsert(uint64_t key, BlockInfo *newBlock);
-    bool PrefetcherWorker();
+    bool PrefetcherWorker(int id);
     /*Prefetch*/
     uint16_t FetchSignal;
     PrefetchInfo Prefetch_stride;
-    Queue<PrefetchTask *>   Prefetch_queue[1];
-    thread                  Prefecther;
+    Queue<PrefetchTask *>   Prefetch_queue[PREFETCHER_NUMBER];
+    thread                  Prefecther[PREFETCHER_NUMBER];
     
 public:
     void rootInitialize(NodeHash LocalNode);

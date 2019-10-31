@@ -20,6 +20,7 @@ CMakeFiles/nrfsc.dir/src/client/nrfs.cpp.o: ../include/common.hpp
 CMakeFiles/nrfsc.dir/src/client/nrfs.cpp.o: ../include/debug.hpp
 CMakeFiles/nrfsc.dir/src/client/nrfs.cpp.o: ../include/global.h
 CMakeFiles/nrfsc.dir/src/client/nrfs.cpp.o: ../include/hashtable.hpp
+CMakeFiles/nrfsc.dir/src/client/nrfs.cpp.o: ../include/lrucache.hpp
 CMakeFiles/nrfsc.dir/src/client/nrfs.cpp.o: ../include/mempool.hpp
 CMakeFiles/nrfsc.dir/src/client/nrfs.cpp.o: ../include/nrfs.h
 CMakeFiles/nrfsc.dir/src/client/nrfs.cpp.o: ../include/storage.hpp
@@ -98,6 +99,7 @@ CMakeFiles/nrfsc.dir/src/fs/storage.cpp.o: ../include/common.hpp
 CMakeFiles/nrfsc.dir/src/fs/storage.cpp.o: ../include/debug.hpp
 CMakeFiles/nrfsc.dir/src/fs/storage.cpp.o: ../include/global.h
 CMakeFiles/nrfsc.dir/src/fs/storage.cpp.o: ../include/hashtable.hpp
+CMakeFiles/nrfsc.dir/src/fs/storage.cpp.o: ../include/lrucache.hpp
 CMakeFiles/nrfsc.dir/src/fs/storage.cpp.o: ../include/storage.hpp
 CMakeFiles/nrfsc.dir/src/fs/storage.cpp.o: ../include/table.hpp
 CMakeFiles/nrfsc.dir/src/fs/storage.cpp.o: ../src/fs/storage.cpp

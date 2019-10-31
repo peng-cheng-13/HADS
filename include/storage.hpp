@@ -13,6 +13,7 @@
 #include "global.h"
 #include "kcdirdb.h"
 #include "kcdirdb.h"
+#include "lrucache.hpp"
 
 typedef struct                          /* Block structure. */
 {
@@ -40,6 +41,7 @@ public:
     NodeHash getNodeHash(UniqueHash *hashUnique); /* Get node hash by unique hash. */
 
     kyotocabinet::DirDB db;
+    cache::lru_cache<uint64_t, BlockInfo> *BlockManager;
     //NodeHash getNodeHash(const char *buffer); /* Get node hash. */
     Storage(char *buffer, char *bufferBlock, char *extraBlock, uint64_t countFile, uint64_t countDirectory, uint64_t countBlock, uint64_t countNode); /* Constructor. */
     ~Storage();                         /* Deconstructor. */

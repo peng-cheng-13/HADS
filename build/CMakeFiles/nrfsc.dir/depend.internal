@@ -21,6 +21,7 @@ CMakeFiles/nrfsc.dir/src/client/nrfs.cpp.o
  ../include/debug.hpp
  ../include/global.h
  ../include/hashtable.hpp
+ ../include/lrucache.hpp
  ../include/mempool.hpp
  ../include/nrfs.h
  ../include/storage.hpp
@@ -99,6 +100,7 @@ CMakeFiles/nrfsc.dir/src/fs/storage.cpp.o
  ../include/debug.hpp
  ../include/global.h
  ../include/hashtable.hpp
+ ../include/lrucache.hpp
  ../include/storage.hpp
  ../include/table.hpp
  /BIGDATA/nsccgz_pcheng_1/src/octopus/src/fs/storage.cpp

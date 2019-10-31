@@ -86,6 +86,9 @@ Storage::Storage(char *buffer, char* bufferBlock, char *extraBlock, uint64_t cou
         sizeBufferUsed = hashtable->sizeBufferUsed + tableFileMeta->sizeBufferUsed + tableDirectoryMeta->sizeBufferUsed + tableBlock->sizeBufferUsed; /* Size of used bytes in buffer. */
         printf("Debug-Storage.cpp: size done\n");
 
+        BlockManager = new cache::lru_cache<uint64_t, BlockInfo>(RdmaBlockCount);
+        Debug::notifyInfo("LRU BlockManager is created");
+
 	if (!db.open(DB_PATH, kyotocabinet::DirDB::OWRITER | kyotocabinet::DirDB::OCREATE | kyotocabinet::DirDB::OTRUNCATE)) {
           printf("DB open failed\n");
           std::cerr << "open error: " << db.error().name() << std::endl;
