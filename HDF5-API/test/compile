@@ -1,1 +1,2 @@
 gcc h5_drivers.c -I/BIGDATA/nsccgz_pcheng_1/install/hdf5-memfs/include -I/BIGDATA/nsccgz_pcheng_1/install/mpich/include -L/BIGDATA/nsccgz_pcheng_1/install/hdf5-memfs/lib -lhdf5 -o DriverTest
+gcc h5_read.c    -I/BIGDATA/nsccgz_pcheng_1/install/hdf5-memfs/include -I/BIGDATA/nsccgz_pcheng_1/install/mpich/include -L/BIGDATA/nsccgz_pcheng_1/install/hdf5-memfs/lib -lhdf5 -o ReadTest

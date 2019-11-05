@@ -1,0 +1,5 @@
+#!/bin/bash
+
+#Top dir must be the HDF5 src dir
+libtool --mode=compile gcc -I. -I/BIGDATA/nsccgz_pcheng_1/src/octopus/include -c H5FDmemfs.c
+

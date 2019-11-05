@@ -51,16 +51,42 @@ void
 split_file(void)
 {
     hid_t fapl, fid;
-
+    hid_t dataset, datatype, dataspace;
+    herr_t status;
     /* Example 1: Both metadata and rawdata files are in the same  */
     /*    directory.   Use Station1-m.h5 and Station1-r.h5 as      */
     /*    the metadata and rawdata files.                          */
     fapl = H5Pcreate(H5P_FILE_ACCESS);
     //H5Pset_fapl_stdio(fapl);
     H5Pset_fapl_memfs(fapl);
-    fid=H5Fcreate("Station1.h5",H5F_ACC_TRUNC,H5P_DEFAULT,fapl);
+    fid = H5Fcreate("/Station1.h5",H5F_ACC_TRUNC,H5P_DEFAULT,fapl);
     printf("File created\n");
-    /* using the file ... */
+
+    /*Write dataset*/
+    hsize_t dimsf[2];
+    int NX = 5;
+    int NY = 6;
+    int data[NX][NY];
+    int i, j;
+    for (i = 0; i < NX; i++) {
+      for (j = 0; j < NY; j++) {
+        data[i][j] = i + j;
+      }
+    }
+
+    dimsf[0] = NX;
+    dimsf[1] = NY;
+    dataspace = H5Screate_simple(2, dimsf, NULL);
+    datatype = H5Tcopy(H5T_NATIVE_INT);
+    dataset = H5Dcreate(fid, "IntArray", datatype, dataspace, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    status = H5Dwrite(dataset, H5T_NATIVE_INT, H5S_ALL, H5S_ALL, H5P_DEFAULT, data);
+
+    printf("Write dataset done\n");
+
+    /* close the file ... */
+    H5Sclose(dataspace);
+    H5Tclose(datatype);
+    H5Dclose(dataset);
     H5Fclose(fid);
     H5Pclose(fapl);
     /* Remove files created */

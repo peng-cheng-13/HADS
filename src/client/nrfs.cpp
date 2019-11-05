@@ -431,9 +431,6 @@ int nrfsGetAttribute(nrfs fs, nrfsFile _file, FileMeta *attr)
     Debug::debugItem("\tMETA.size = %d, block.count is %d ", bufferGetAttributeReceive->attribute.size, bufferGetAttributeReceive->attribute.count);
     memcpy((void *)attr, (void *)&bufferGetAttributeReceive->attribute, sizeof(bufferGetAttributeReceive->attribute));
     if(bufferGetAttributeReceive->result) {
-        if(bufferGetAttributeReceive->message == MESSAGE_NOTDIR) {
-  	    return 1;
-	}
 	return 0;
     } else {
         return -1;
@@ -465,9 +462,6 @@ int nrfsGetBlockList(nrfs fs, nrfsFile file, FileMeta *attr, BlockInfo BlockList
     //BlockList = bufferGetAttributeReceive->BlockList;
     Debug::debugItem("BlockID %d, node %d, tier %d", bufferGetAttributeReceive->BlockList[0].BlockID, bufferGetAttributeReceive->BlockList[0].nodeID, bufferGetAttributeReceive->BlockList[0].tier);
     if(bufferGetAttributeReceive->result) {
-        if(bufferGetAttributeReceive->message == MESSAGE_NOTDIR) {
-            return 1;
-        }
         return 0;
     } else {
         return -1;

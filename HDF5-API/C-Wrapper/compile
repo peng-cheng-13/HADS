@@ -1,0 +1,8 @@
+#!/bin/bash
+#g++ -Wall -std=c++11 -I/BIGDATA/nsccgz_pcheng_1/src/octopus/include -c memfsWrapper.cc -o memfsWrapper.o
+#gcc -Wall -c test.c -o test.o
+#gcc -Wall  memfsWrapper.o test.o -L/BIGDATA/nsccgz_pcheng_1/src/octopus/build -lnrfsc -lstdc++ -o test
+
+
+g++ memfsWrapper.cc -Wall -std=c++11 -I/BIGDATA/nsccgz_pcheng_1/src/octopus/include -L/BIGDATA/nsccgz_pcheng_1/src/octopus/build -lnrfsc -shared -fPIC -o libmemfsWrapper.so
+gcc -Wall  test.c -lmemfsWrapper -o test
