@@ -2,6 +2,15 @@
 
 Peng Cheng, NUDT
 
+Modification:
+- RDMA implementation: Tianhe2-Glex
+- Memory storage tier: Table
+- SSD storage tier: Kyoto Cabinet
+- Distributed block
+- Multi-threads prefetch
+- HDF5 Driver implementation
+- Alluixo UFS implementation
+
 Octopus: an RDMA-enabled distributed persistent memory file system
 =========
 
@@ -38,10 +47,4 @@ conf.xml: configuration of the cluster
 
 
 Storage Research Group @ Tsinghua Universty
-
-Modification:
-- RDMA implementation: Tianhe2-Glex
-- Memory storage tier: Table
-- SSD storage tier: Kyoto Cabinet
-- Distributed block
 
