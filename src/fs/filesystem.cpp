@@ -840,7 +840,7 @@ bool FileSystem::mknodcd(const char *path)
                         metaFile.count = 0; /* Initialize count of extents as 0. */
                         metaFile.size = 0;
 			metaFile.isNewFile = true;
-			metaFile.tier = 0;
+			metaFile.tier = 1;
                         /* Apply updated data to local log. */
                         TxWriteData(LocalTxID, (uint64_t)&parentMeta, (uint64_t)sizeof(DirectoryMeta));
                         /* Receive remote prepare with (OK) */
@@ -2682,7 +2682,7 @@ uint16_t FileSystem::getBlockNodeID() {
 
 /*Get storage tier for newly created block*/
 uint16_t FileSystem::getBlockTier() {
-    uint16_t tier = 0;
+    uint16_t tier = 1;
     return tier;
 }
 

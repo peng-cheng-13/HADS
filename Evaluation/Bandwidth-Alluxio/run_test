@@ -1,0 +1,10 @@
+#!/bin/bash
+if [ $# -lt 1 ];then
+ echo "wrong input"
+ exit
+fi
+#for i in `seq 1 $1`;do(java -cp /BIGDATA/nsccgz_pcheng_1/TDMS-Alluxio/core/client/runtime/target/alluxio-core-client-runtime-1.6.1-jar-with-dependencies.jar:. Write $i & );done
+#java -cp /BIGDATA/nsccgz_pcheng_1/TDMS-Alluxio/core/client/runtime/target/alluxio-core-client-runtime-1.6.1-jar-with-dependencies.jar:. Write 0
+echo 3 > /proc/sys/vm/drop_caches
+for i in `seq 1 $1`;do(java -cp /BIGDATA/nsccgz_pcheng_1/TDMS-Alluxio/core/client/runtime/target/alluxio-core-client-runtime-1.6.1-jar-with-dependencies.jar:. Read $i &);done
+#java -cp /BIGDATA/nsccgz_pcheng_1/TDMS-Alluxio/core/client/runtime/target/alluxio-core-client-runtime-1.6.1-jar-with-dependencies.jar:. Read 0
