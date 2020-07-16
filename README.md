@@ -1,4 +1,4 @@
-# Tiered Data Management System based on octopus
+# Hierarchical and Adaptive Data Staging system based on octopus
 
 Peng Cheng, NUDT
 
